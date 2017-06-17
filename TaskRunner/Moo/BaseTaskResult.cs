@@ -13,6 +13,7 @@ namespace MooPromise.TaskRunner.Moo
     {
         private volatile object _result;
         private volatile bool _hasResult;
+        private IList<Action<object>> _onResultList;
 
         public BaseTaskResult(IThreadPool threadpool, IThreadPoolResult result)
         {
@@ -20,6 +21,7 @@ namespace MooPromise.TaskRunner.Moo
             this.ThreadPoolResult = result;
             this._result = null;
             this._hasResult = false;
+            this._onResultList = null;
         }
 
         protected IThreadPool ThreadPool
@@ -84,6 +86,14 @@ namespace MooPromise.TaskRunner.Moo
                 {
                     _result = value;
                     _hasResult = true;
+
+                    if (_onResultList != null)
+                    {
+                        foreach (var callback in _onResultList)
+                        {
+                            callback(value);
+                        }
+                    }
                 }
             }
         }
@@ -95,6 +105,26 @@ namespace MooPromise.TaskRunner.Moo
                 lock (this)
                 {
                     return _hasResult;
+                }
+            }
+        }
+
+        public void OnResult(Action<object> callback)
+        {
+            lock (this)
+            {
+                if (HasResult)
+                {
+                    callback(Result);
+                }
+                else
+                {
+                    if (_onResultList == null)
+                    {
+                        _onResultList = new List<Action<object>>();
+                    }
+
+                    _onResultList.Add(callback);
                 }
             }
         }

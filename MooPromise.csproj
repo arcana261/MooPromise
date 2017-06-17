@@ -44,6 +44,7 @@
     <Compile Include="Promise.cs" />
     <Compile Include="PromiseBackend.cs" />
     <Compile Include="PromiseFactory.cs" />
+    <Compile Include="PromiseImpl\ManualPromise.cs" />
     <Compile Include="PromiseImpl\PromiseHelpers.cs" />
     <Compile Include="PromisePriority.cs" />
     <Compile Include="PromiseImpl\BasePromise.cs" />

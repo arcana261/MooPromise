@@ -19,13 +19,13 @@ namespace MooPromise.TaskRunner
         {
             get
             {
-                return new BoundTaskResult(this, new ImmediateTaskResult(ThreadPool, ThreadPoolResult));
+                return new BoundTaskResult(this, new ImmediateTaskResult(this, ThreadPool, ThreadPoolResult));
             }
         }
 
         public override ITaskResult WithPriority(int priority)
         {
-            return new BoundTaskResult(this, new PriorityTaskResult(ThreadPool, ThreadPoolResult, priority));
+            return new BoundTaskResult(this, new PriorityTaskResult(this, ThreadPool, ThreadPoolResult, priority));
         }
 
         protected override IThreadPoolResult CreateResult(Action action)

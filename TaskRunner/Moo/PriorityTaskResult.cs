@@ -10,22 +10,26 @@ namespace MooPromise.TaskRunner.Moo
     {
         private int _priority;
 
-        public PriorityTaskResult(IThreadPool threadpool, IThreadPoolResult result, int priority) : base(threadpool, result)
+        public PriorityTaskResult(BaseTaskResult owner, IThreadPool threadpool, IThreadPoolResult result, int priority) : base(threadpool, result)
         {
             this._priority = priority;
+            owner.OnResult(value =>
+            {
+                this.Result = value;
+            });
         }
 
         public override ITaskResult Immediately
         {
             get
             {
-                return new BoundTaskResult(this, new ImmediateTaskResult(ThreadPool, ThreadPoolResult));
+                return new BoundTaskResult(this, new ImmediateTaskResult(this, ThreadPool, ThreadPoolResult));
             }
         }
 
         public override ITaskResult WithPriority(int priority)
         {
-            return new BoundTaskResult(this, new PriorityTaskResult(ThreadPool, ThreadPoolResult, priority));
+            return new BoundTaskResult(this, new PriorityTaskResult(this, ThreadPool, ThreadPoolResult, priority));
         }
 
         protected override IThreadPoolResult CreateResult(Action action)

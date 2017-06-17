@@ -8,8 +8,12 @@ namespace MooPromise.TaskRunner.Moo
 {
     internal class ImmediateTaskResult : BaseTaskResult
     {
-        public ImmediateTaskResult(IThreadPool threadpool, IThreadPoolResult result) : base(threadpool, result)
+        public ImmediateTaskResult(BaseTaskResult owner, IThreadPool threadpool, IThreadPoolResult result) : base(threadpool, result)
         {
+            owner.OnResult(value =>
+            {
+                this.Result = value;
+            });
         }
 
         public override ITaskResult Immediately
@@ -22,7 +26,7 @@ namespace MooPromise.TaskRunner.Moo
 
         public override ITaskResult WithPriority(int priority)
         {
-            return new BoundTaskResult(this, new PriorityTaskResult(ThreadPool, ThreadPoolResult, priority));
+            return new BoundTaskResult(this, new PriorityTaskResult(this, ThreadPool, ThreadPoolResult, priority));
         }
 
         protected override IThreadPoolResult CreateResult(Action action)

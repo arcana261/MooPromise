@@ -209,6 +209,28 @@ namespace MooPromise
             return ret;
         }
 
+        public IPromise Parallel(IEnumerable<IPromise> promises)
+        {
+            var result = new ManualPromise(_taskFactory);
+            result.Start();
+
+            foreach (var promise in promises)
+            {
+                promise.Then(() =>
+                {
+                    if (promises.All(x => x.State == AsyncState.Completed))
+                    {
+                        result.SetCompleted();
+                    }
+                }).Finally(error =>
+                {
+                    result.SetFailed(error);
+                });
+            }
+
+            return result;
+        }
+
         public void Dispose()
         {
             Dispose(true);
