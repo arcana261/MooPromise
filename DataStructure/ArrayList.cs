@@ -1,4 +1,6 @@
-﻿using MooPromise.DataStructure.Debug;
+﻿#if DEBUG && !_NDIAGNOSTICS
+using MooPromise.DataStructure.Debug;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,13 +10,13 @@ using System.Collections;
 
 namespace MooPromise.DataStructure
 {
-#if DEBUG
+#if DEBUG && !_NDIAGNOSTICS
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     [DebuggerTypeProxy(typeof(ListDebugView))]
 #endif
     internal class ArrayList<T> : IList<T>
     {
-#if DEBUG
+#if DEBUG && !_NDIAGNOSTICS
         private string DebuggerDisplay
         {
             get

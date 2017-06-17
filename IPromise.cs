@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace MooPromise
 {
@@ -11,6 +12,7 @@ namespace MooPromise
         bool Cancel();
         Exception Error { get; }
         AsyncState State { get; }
+        WaitHandle AsyncWaitHandle { get; }
     }
 
     public interface IPromise : IPromiseBase
@@ -25,6 +27,7 @@ namespace MooPromise
         IPromise Finally(Action<Exception> action);
         IPromise Immediately { get; }
         IPromise Priority(PromisePriority priority);
+        void Join();
     }
 
     public interface IPromise<T> : IPromiseBase
@@ -46,5 +49,6 @@ namespace MooPromise
         IPromise<T> Immediately { get; }
         IPromise<T> Priority(PromisePriority priority);
         T Result { get; }
+        T Join();
     }
 }

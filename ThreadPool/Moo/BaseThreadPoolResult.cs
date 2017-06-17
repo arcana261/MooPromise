@@ -133,6 +133,11 @@ namespace MooPromise.ThreadPool.Moo
             {
                 if (State == AsyncState.Running || State == AsyncState.Pending)
                 {
+                    if (error == null)
+                    {
+                        throw new ArgumentException("error can not be null");
+                    }
+
                     State = state;
                     Error = error;
 

@@ -22,7 +22,7 @@ namespace MooPromise.PromiseImpl
 
         public override IPromise Priority(PromisePriority priority)
         {
-            return new PriorityPromise(TaskFactory, TaskResult, (int)priority);
+            return new PriorityPromise(TaskFactory, TaskResult, priority);
         }
 
         protected override ITaskResult ProcessTaskResult(ITaskResult result)
@@ -47,7 +47,7 @@ namespace MooPromise.PromiseImpl
 
         public override IPromise<T> Priority(PromisePriority priority)
         {
-            return new PriorityPromise<T>(TaskFactory, TaskResult, (int)priority);
+            return new PriorityPromise<T>(TaskFactory, TaskResult, priority);
         }
 
         protected override ITaskResult ProcessTaskResult(ITaskResult result)

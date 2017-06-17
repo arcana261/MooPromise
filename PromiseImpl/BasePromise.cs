@@ -3,15 +3,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace MooPromise.PromiseImpl
 {
     internal abstract class BasePromise : IPromise
     {
+        private ManualResetEvent _waitHandle;
+
         public BasePromise(ITaskFactory factory, ITaskResult task)
         {
             this.TaskFactory = factory;
             this.TaskResult = task;
+            this._waitHandle = null;
         }
 
         protected ITaskResult TaskResult
@@ -117,14 +121,52 @@ namespace MooPromise.PromiseImpl
         {
             return CreatePromise<T>(ProcessTaskResult(TaskResult).Then(() => (object)action()));
         }
+
+
+        public System.Threading.WaitHandle AsyncWaitHandle
+        {
+            get
+            {
+                lock (this)
+                {
+                    if (_waitHandle == null)
+                    {
+                        _waitHandle = new ManualResetEvent(false);
+
+                        this.Then(() =>
+                        {
+                            _waitHandle.Set();
+                        }).Finally(() =>
+                        {
+                            _waitHandle.Set();
+                        });
+                    }
+
+                    return _waitHandle;
+                }
+            }
+        }
+
+        public void Join()
+        {
+            AsyncWaitHandle.WaitOne();
+
+            if (State == AsyncState.Failed)
+            {
+                throw new InvalidOperationException("Join failed on operation", Error);
+            }
+        }
     }
 
     internal abstract class BasePromise<T> : IPromise<T>
     {
+        private ManualResetEvent _waitHandle;
+
         public BasePromise(ITaskFactory factory, ITaskResult task)
         {
             this.TaskFactory = factory;
             this.TaskResult = task;
+            this._waitHandle = null;
         }
 
         protected ITaskResult TaskResult
@@ -246,7 +288,10 @@ namespace MooPromise.PromiseImpl
 
         public IPromise Then(Action<T> action)
         {
-            return CreatePromise(ProcessTaskResult(TaskResult).Then(x => action(x.HasResult ? (T)x.Result : default(T))));
+            return CreatePromise(ProcessTaskResult(TaskResult).Then(x =>
+            {
+                action(x.HasResult ? (T)x.Result : default(T));
+            }));
         }
 
         public IPromise<F> Then<F>(Func<F> action)
@@ -267,6 +312,42 @@ namespace MooPromise.PromiseImpl
         public IPromise<F> Then<F>(Func<T, F> action)
         {
             return CreatePromise<F>(ProcessTaskResult(TaskResult).Then(x => (object)action(x.HasResult ? (T)x.Result : default(T))));
+        }
+
+        public System.Threading.WaitHandle AsyncWaitHandle
+        {
+            get
+            {
+                lock (this)
+                {
+                    if (_waitHandle == null)
+                    {
+                        _waitHandle = new ManualResetEvent(false);
+
+                        this.Immediately.Then(() =>
+                        {
+                            _waitHandle.Set();
+                        }).Immediately.Finally(() =>
+                        {
+                            _waitHandle.Set();
+                        });
+                    }
+
+                    return _waitHandle;
+                }
+            }
+        }
+
+        public T Join()
+        {
+            AsyncWaitHandle.WaitOne();
+
+            if (State == AsyncState.Failed)
+            {
+                throw Error;
+            }
+
+            return Result;
         }
     }
 }

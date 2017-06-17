@@ -10,5 +10,9 @@ namespace MooPromise
         void Add(Action action);
         void Add(Action action, int priority);
         void AddImmediately(Action action);
+        bool IsCurrentThreadManagedByBackend();
+#if DEBUG
+        IEnumerable<int> ManagedThreadIds { get; }
+#endif
     }
 }

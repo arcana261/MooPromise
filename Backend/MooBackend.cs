@@ -53,6 +53,19 @@ namespace MooPromise.Backend
             Dispose(false);
         }
 
+#if DEBUG
+        public IEnumerable<int> ManagedThreadIds
+        {
+            get
+            {
+                lock (_syncRoot)
+                {
+                    return _runners.Select(x => x.ManagedThreadId).ToList();
+                }
+            }
+        }
+#endif
+
         private void ContractThreadsIfNeeded()
         {
             IList<MooBackendRunner> freeThreads = null;
@@ -72,8 +85,15 @@ namespace MooPromise.Backend
                     {
                         foreach (var thread in freeThreads)
                         {
-                            _runners.Remove(thread);
+                            if (!_runners.Remove(thread))
+                            {
+                                throw new InvalidProgramException("could not safely dispose un-needed threadpool threads");
+                            }
                         }
+                    }
+                    else
+                    {
+                        freeThreads = null;
                     }
                 }
             }
@@ -82,9 +102,16 @@ namespace MooPromise.Backend
             {
                 Add(() =>
                 {
-                    foreach (var thread in freeThreads)
+                    try
                     {
-                        thread.Dispose();
+                        foreach (var thread in freeThreads)
+                        {
+                            thread.Dispose();
+                        }
+                    }
+                    catch (Exception error)
+                    {
+                        Environment.FailFast("could not dispose un-needed threadpool threads", error);
                     }
                 }, int.MinValue);
             }
@@ -190,6 +217,19 @@ namespace MooPromise.Backend
                         runner.Dispose();
                     }
                 }
+            }
+        }
+
+        public bool IsCurrentThreadManagedByBackend()
+        {
+            lock (_syncRoot)
+            {
+                if (_disposed)
+                {
+                    throw new ObjectDisposedException("MooThreadPool");
+                }
+
+                return _runners.Any(x => x.IsInsideRunnerThread());
             }
         }
     }

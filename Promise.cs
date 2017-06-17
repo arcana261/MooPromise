@@ -1,8 +1,10 @@
-﻿using MooPromise.PromiseImpl;
+﻿using MooPromise.Backend;
+using MooPromise.PromiseImpl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace MooPromise
 {
@@ -10,6 +12,8 @@ namespace MooPromise
     {
         private static object _syncRoot = new object();
         private static PromiseFactory _factory;
+        private static PromiseBackend _backendType;
+        private static IBackend _backend;
 
         public static PromiseFactory Factory
         {
@@ -20,11 +24,95 @@ namespace MooPromise
                     if (_factory == null)
                     {
                         _factory = new PromiseFactory();
+                        _backendType = PromiseFactory.DefaultBackend;
+                        _backend = null;
                     }
 
                     return _factory;
                 }
             }
+        }
+
+        public static void SetDefaultFactory(PromiseBackend backend)
+        {
+            lock (_syncRoot)
+            {
+                if (_factory == null)
+                {
+                    _factory = new PromiseFactory(backend);
+                    _backend = null;
+                    if (backend == PromiseBackend.Default)
+                    {
+                        _backendType = PromiseFactory.DefaultBackend;
+                    }
+                    else
+                    {
+                        _backendType = backend;
+                    }
+                }
+                else if (_backend != null)
+                {
+                    _factory.Dispose();
+                    _factory = new PromiseFactory(backend);
+                    _backend = null;
+
+                    if (backend == PromiseBackend.Default)
+                    {
+                        _backendType = PromiseFactory.DefaultBackend;
+                    }
+                    else
+                    {
+                        _backendType = backend;
+                    }
+                }
+                else if (_backendType != backend)
+                {
+                    _factory.Dispose();
+                    _factory = new PromiseFactory(backend);
+
+                    if (backend == PromiseBackend.Default)
+                    {
+                        _backendType = PromiseFactory.DefaultBackend;
+                    }
+                    else
+                    {
+                        _backendType = backend;
+                    }
+                }
+            }
+        }
+
+        public static void SetDefaultFactory(IBackend backend)
+        {
+            lock (_syncRoot)
+            {
+                if (_factory == null)
+                {
+                    _factory = new PromiseFactory(backend);
+                    _backend = backend;
+                }
+                else if (!Object.Equals(_backend, backend))
+                {
+                    _factory.Dispose();
+                    _factory = new PromiseFactory(backend);
+                    _backend = backend;
+                }
+            }
+        }
+
+        public static void SetDefaultFactory(int minThreads, int maxThreads)
+        {
+            SetDefaultFactory(new MooBackend(minThreads, maxThreads));
+        }
+
+        public static void SetDefaultFactory(SynchronizationContext context)
+        {
+            SetDefaultFactory(new SynchronizationContextBackend(context));
+        }
+
+        public static void SetDefaultFactory(System.Windows.Threading.Dispatcher dispatcher)
+        {
+            SetDefaultFactory(new WpfDispatcherBackend(dispatcher));
         }
 
         public static PromiseFactory CreateFactory(IBackend backend)
@@ -42,9 +130,29 @@ namespace MooPromise
             return new PromiseFactory(minThreads, maxThreads);
         }
 
+        public static PromiseFactory CreateFactory(SynchronizationContext context)
+        {
+            return new PromiseFactory(context);
+        }
+
+        public static PromiseFactory CreateFactory(System.Windows.Threading.Dispatcher dispatcher)
+        {
+            return new PromiseFactory(dispatcher);
+        }
+
         public static PromiseFactory CreateFactory()
         {
             return new PromiseFactory();
+        }
+
+        public static Synchronization CreateSynchronizationContext(PromiseFactory factory)
+        {
+            return new Synchronization(factory);
+        }
+
+        public static Synchronization CreateSynchronizationContext()
+        {
+            return CreateSynchronizationContext(Factory);
         }
 
         public IPromise Immediately
@@ -170,6 +278,20 @@ namespace MooPromise
         {
             return _promise.Finally(action);
         }
+
+
+        public System.Threading.WaitHandle AsyncWaitHandle
+        {
+            get
+            {
+                return _promise.AsyncWaitHandle;
+            }
+        }
+
+        public void Join()
+        {
+            _promise.Join();
+        }
     }
 
     public class Promise<T> : IPromise<T>
@@ -199,9 +321,44 @@ namespace MooPromise
             return new PromiseFactory(minThreads, maxThreads);
         }
 
+        public static PromiseFactory CreateFactory(SynchronizationContext context)
+        {
+            return new PromiseFactory(context);
+        }
+
+        public static PromiseFactory CreateFactory(System.Windows.Threading.Dispatcher dispatcher)
+        {
+            return new PromiseFactory(dispatcher);
+        }
+
         public static PromiseFactory CreateFactory()
         {
             return new PromiseFactory();
+        }
+
+        public static void SetDefaultFactory(PromiseBackend backend)
+        {
+            Promise.SetDefaultFactory(backend);
+        }
+
+        public static void SetDefaultFactory(IBackend backend)
+        {
+            Promise.SetDefaultFactory(backend);
+        }
+
+        public static void SetDefaultFactory(int minThreads, int maxThreads)
+        {
+            Promise.SetDefaultFactory(minThreads, maxThreads);
+        }
+
+        public static void SetDefaultFactory(SynchronizationContext context)
+        {
+            Promise.SetDefaultFactory(context);
+        }
+
+        public static void SetDefaultFactory(System.Windows.Threading.Dispatcher dispatcher)
+        {
+            Promise.SetDefaultFactory(dispatcher);
         }
 
         public IPromise<T> Immediately
@@ -366,6 +523,20 @@ namespace MooPromise
         public IPromise<T> Finally(Action<Exception> action)
         {
             return _promise.Finally(action);
+        }
+
+
+        public System.Threading.WaitHandle AsyncWaitHandle
+        {
+            get
+            {
+                return _promise.AsyncWaitHandle;
+            }
+        }
+
+        public T Join()
+        {
+            return _promise.Join();
         }
     }
 }

@@ -8,9 +8,9 @@ namespace MooPromise.PromiseImpl
 {
     internal class PriorityPromise : BasePromise
     {
-        private int _priority;
+        private PromisePriority _priority;
 
-        public PriorityPromise(ITaskFactory factory, ITaskResult task, int priority) : base(factory, task)
+        public PriorityPromise(ITaskFactory factory, ITaskResult task, PromisePriority priority) : base(factory, task)
         {
             this._priority = priority;
         }
@@ -25,20 +25,27 @@ namespace MooPromise.PromiseImpl
 
         public override IPromise Priority(PromisePriority priority)
         {
-            return new PriorityPromise(TaskFactory, TaskResult, (int)priority);
+            return new PriorityPromise(TaskFactory, TaskResult, priority);
         }
 
         protected override ITaskResult ProcessTaskResult(ITaskResult result)
         {
-            return result.WithPriority(_priority);
+            if (_priority == PromisePriority.Immediate)
+            {
+                return result.Immediately;
+            }
+            else
+            {
+                return result.WithPriority((int)_priority);
+            }
         }
     }
 
     internal class PriorityPromise<T> : BasePromise<T>
     {
-        private int _priority;
+        private PromisePriority _priority;
 
-        public PriorityPromise(ITaskFactory factory, ITaskResult task, int priority) : base(factory, task)
+        public PriorityPromise(ITaskFactory factory, ITaskResult task, PromisePriority priority) : base(factory, task)
         {
             this._priority = priority;
         }
@@ -53,12 +60,19 @@ namespace MooPromise.PromiseImpl
 
         public override IPromise<T> Priority(PromisePriority priority)
         {
-            return new PriorityPromise<T>(TaskFactory, TaskResult, (int)priority);
+            return new PriorityPromise<T>(TaskFactory, TaskResult, priority);
         }
 
         protected override ITaskResult ProcessTaskResult(ITaskResult result)
         {
-            return result.WithPriority(_priority);
+            if (_priority == PromisePriority.Immediate)
+            {
+                return result.Immediately;
+            }
+            else
+            {
+                return result.WithPriority((int)_priority);
+            }
         }
     }
 }

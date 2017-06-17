@@ -1,4 +1,6 @@
-﻿using MooPromise.DataStructure.Debug;
+﻿#if DEBUG && !_NDIAGNOSTICS
+using MooPromise.DataStructure.Debug;
+#endif
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Threading;
 
 namespace MooPromise.DataStructure.Concurrent
 {
-#if DEBUG
+#if DEBUG && !_NDIAGNOSTICS
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     [DebuggerTypeProxy(typeof(ListDebugView))]
 #endif
@@ -17,7 +19,7 @@ namespace MooPromise.DataStructure.Concurrent
     {
         private IPriorityQueue<T> _items;
 
-#if DEBUG
+#if DEBUG && !_NDIAGNOSTICS
         private string DebuggerDisplay
         {
             get

@@ -103,7 +103,7 @@ namespace MooPromise.TaskRunner
                 throw new ObjectDisposedException("TaskFactory");
             }
 
-            ManualThreadPoolResult ret = new ManualThreadPoolResult();
+            ManualTaskResult ret = new ManualTaskResult(_threadPool);
             ret.Start();
 
             var task = Create(() =>
@@ -112,8 +112,12 @@ namespace MooPromise.TaskRunner
 
                 if (next != null)
                 {
-                    next.Then(() =>
+                    next.Then(x =>
                     {
+                        if (x.HasResult)
+                        {
+                            ret.SetResult(x.Result);
+                        }
                         ret.SetCompleted();
                     }).Catch(error =>
                     {
@@ -129,7 +133,7 @@ namespace MooPromise.TaskRunner
                 ret.SetFailed(error);
             });
 
-            return new BoundTaskResult(task, new TaskResult(_threadPool, ret));
+            return new BoundTaskResult(task, ret);
         }
 
         public ITaskResult Create(Func<ITaskResult> action, int priority)
@@ -139,7 +143,7 @@ namespace MooPromise.TaskRunner
                 throw new ObjectDisposedException("TaskFactory");
             }
 
-            ManualThreadPoolResult ret = new ManualThreadPoolResult();
+            ManualTaskResult ret = new ManualTaskResult(_threadPool);
             ret.Start();
 
             var task = Create(() =>
@@ -148,8 +152,13 @@ namespace MooPromise.TaskRunner
 
                 if (next != null)
                 {
-                    next.Then(() =>
+                    next.Then(x =>
                     {
+                        if (x.HasResult)
+                        {
+                            ret.SetResult(x.Result);
+                        }
+
                         ret.SetCompleted();
                     }).Catch(error =>
                     {
@@ -165,7 +174,7 @@ namespace MooPromise.TaskRunner
                 ret.SetFailed(error);
             });
 
-            return new BoundTaskResult(task, new TaskResult(_threadPool, ret));
+            return new BoundTaskResult(task, ret);
         }
 
         public ITaskResult CreateImmediately(Func<ITaskResult> action)
@@ -175,7 +184,7 @@ namespace MooPromise.TaskRunner
                 throw new ObjectDisposedException("TaskFactory");
             }
 
-            ManualThreadPoolResult ret = new ManualThreadPoolResult();
+            ManualTaskResult ret = new ManualTaskResult(_threadPool);
             ret.Start();
 
             var task = CreateImmediately(() =>
@@ -184,8 +193,13 @@ namespace MooPromise.TaskRunner
 
                 if (next != null)
                 {
-                    next.Then(() =>
+                    next.Then(x =>
                     {
+                        if (x.HasResult)
+                        {
+                            ret.SetResult(x.Result);
+                        }
+
                         ret.SetCompleted();
                     }).Catch(error =>
                     {
@@ -201,7 +215,7 @@ namespace MooPromise.TaskRunner
                 ret.SetFailed(error);
             });
 
-            return new BoundTaskResult(task, new TaskResult(_threadPool, ret));
+            return new BoundTaskResult(task, ret);
         }
 
         public ITaskResult Begin(Func<ITaskResult> action)

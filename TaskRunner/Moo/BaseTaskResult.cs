@@ -87,12 +87,19 @@ namespace MooPromise.TaskRunner.Moo
                     _result = value;
                     _hasResult = true;
 
-                    if (_onResultList != null)
+                    try
                     {
-                        foreach (var callback in _onResultList)
+                        if (_onResultList != null)
                         {
-                            callback(value);
+                            foreach (var callback in _onResultList)
+                            {
+                                callback(value);
+                            }
                         }
+                    }
+                    catch (Exception error)
+                    {
+                        Environment.FailFast("can not call OnResult callback", error);
                     }
                 }
             }
@@ -115,7 +122,14 @@ namespace MooPromise.TaskRunner.Moo
             {
                 if (HasResult)
                 {
-                    callback(Result);
+                    try
+                    {
+                        callback(Result);
+                    }
+                    catch (Exception error)
+                    {
+                        Environment.FailFast("can not call OnResult callback", error);
+                    }
                 }
                 else
                 {

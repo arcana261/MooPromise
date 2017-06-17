@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;_NDIAGNOSTICS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -38,8 +38,11 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Backend\SynchronizationContextBackend.cs" />
+    <Compile Include="Backend\WpfDispatcherBackend.cs" />
     <Compile Include="ExceptionHandling\ExceptionUtility.cs" />
     <Compile Include="Promise.cs" />
     <Compile Include="PromiseBackend.cs" />
@@ -52,6 +55,7 @@
     <Compile Include="PromiseImpl\ImmediatePromise.cs" />
     <Compile Include="PromiseImpl\PriorityPromise.cs" />
     <Compile Include="PromiseImpl\NormalPromise.cs" />
+    <Compile Include="Synchronization.cs" />
     <Compile Include="TaskRunner\ManualTaskResult.cs" />
     <Compile Include="TaskRunner\Moo\FailureProcessedException.cs" />
     <Compile Include="TaskRunner\NullableResult.cs" />
@@ -72,7 +76,6 @@
     <Compile Include="ThreadPool\Moo\BackendResultWithPriority.cs" />
     <Compile Include="DataStructure\ArrayList.cs" />
     <Compile Include="DataStructure\Concurrent\ConcurrentPriorityQueue.cs" />
-    <Compile Include="DataStructure\Debug\ListDebugView.cs" />
     <Compile Include="DataStructure\DoubleEndedList.cs" />
     <Compile Include="DataStructure\Heap.cs" />
     <Compile Include="DataStructure\IPriorityQueue.cs" />
@@ -90,7 +93,9 @@
     <Compile Include="Backend\Moo\MooBackendTask.cs" />
     <Compile Include="Backend\TplBackend.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DataStructure\Debug\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

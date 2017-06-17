@@ -33,9 +33,24 @@ namespace MooPromise.Backend
             Add(action);
         }
 
+        public bool IsCurrentThreadManagedByBackend()
+        {
+            return false;
+        }
+
         public void Dispose()
         {
             
         }
+
+#if DEBUG
+        public IEnumerable<int> ManagedThreadIds
+        {
+            get
+            {
+                return new int[] { };
+            }
+        }
+#endif
     }
 }
