@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;_NDIAGNOSTICS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Backend\SynchronizationContextBackend.cs" />
     <Compile Include="Backend\WpfDispatcherBackend.cs" />
+    <Compile Include="DataStructure\Debug\ListDebugView.cs" />
     <Compile Include="ExceptionHandling\ExceptionUtility.cs" />
     <Compile Include="Promise.cs" />
     <Compile Include="PromiseBackend.cs" />
@@ -93,9 +94,7 @@
     <Compile Include="Backend\Moo\MooBackendTask.cs" />
     <Compile Include="Backend\TplBackend.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DataStructure\Debug\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
