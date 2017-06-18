@@ -16,6 +16,11 @@ namespace MooPromise
 
         public PromiseFactory(IBackend backend)
         {
+            if (backend == null)
+            {
+                throw new ArgumentNullException("backend");
+            }
+
             _taskFactory = new TaskFactory(backend);
         }
 
@@ -507,7 +512,10 @@ namespace MooPromise
                 if (!_disposed)
                 {
                     _disposed = true;
-                    _taskFactory.Dispose();
+                    if (_taskFactory != null)
+                    {
+                        _taskFactory.Dispose();
+                    }
                 }
             }
         }

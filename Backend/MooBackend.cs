@@ -18,7 +18,7 @@ namespace MooPromise.Backend
 
         public MooBackend(int minThreads, int maxThreads)
         {
-            if (minThreads <= 0)
+            if (minThreads < 0)
             {
                 throw new ArgumentException("minThreads");
             }
@@ -201,20 +201,23 @@ namespace MooPromise.Backend
 
         private void Dispose(bool disposing)
         {
-            lock (_syncRoot)
+            if (_syncRoot != null)
             {
-                if (!_disposed)
+                lock (_syncRoot)
                 {
-                    _disposed = true;
-
-                    while (_runners.Any(x => x.IsBusy))
+                    if (!_disposed)
                     {
-                        Thread.Sleep(1);
-                    }
+                        _disposed = true;
 
-                    foreach (var runner in _runners)
-                    {
-                        runner.Dispose();
+                        while (_runners.Any(x => x.IsBusy))
+                        {
+                            Thread.Sleep(1);
+                        }
+
+                        foreach (var runner in _runners)
+                        {
+                            runner.Dispose();
+                        }
                     }
                 }
             }
