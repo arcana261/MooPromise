@@ -412,17 +412,15 @@ namespace MooPromise
             }
         }
 
-        private IPromise<IEnumerable<E>> Map<T, E>(IEnumerator<T> items, IList<E> list, Func<T, IPromise<E>> action)
+        private IPromise<IEnumerable<E>> Map<T, E>(IEnumerator<IPromise<T>> items, IList<E> list, Func<T, IPromise<E>> action)
         {
             if (items.MoveNext())
             {
-                var ret = action(items.Current).Then(x =>
+                return items.Current.Then(x => action(x)).Then(y =>
                 {
-                    list.Add(x);
+                    list.Add(y);
                     return Map(items, list, action);
                 });
-                ret.Start();
-                return ret;
             }
             else
             {
@@ -430,24 +428,23 @@ namespace MooPromise
             }
         }
 
+        public IPromise<IEnumerable<E>> Map<T, E>(IEnumerable<IPromise<T>> items, Func<T, IPromise<E>> action)
+        {
+            return Map(items.GetEnumerator(), new List<E>(), action);
+        }
+
         public IPromise<IEnumerable<E>> Map<T, E>(IEnumerable<T> items, Func<T, IPromise<E>> action)
         {
-            if (items == null)
-            {
-                return StartNew((IEnumerable<E>)(new List<E>()));
-            }
+            return Map(items.Select(x => StartNew(x)), action);
+        }
 
-            IList<E> list = new List<E>();
-            return Map(items.GetEnumerator(), list, action);
+        public IPromise<IEnumerable<E>> Map<T, E>(IEnumerable<IPromise<T>> items, Func<T, E> action)
+        {
+            return Map(items, x => StartNew(action(x)));
         }
 
         public IPromise<IEnumerable<E>> Map<T, E>(IEnumerable<T> items, Func<T, E> action)
         {
-            if (items == null)
-            {
-                return StartNew((IEnumerable<E>)(new List<E>()));
-            }
-
             return Map(items, x => StartNew(action(x)));
         }
 
