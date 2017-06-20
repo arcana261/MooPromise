@@ -50,7 +50,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MooPromise\MooPromise.csproj">
+    <ProjectReference Include="..\MooPromise.csproj">
       <Project>{e25a6162-94b1-4cc2-b346-0086b871e13d}</Project>
       <Name>MooPromise</Name>
     </ProjectReference>

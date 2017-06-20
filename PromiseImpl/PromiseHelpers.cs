@@ -20,7 +20,10 @@ namespace MooPromise.PromiseImpl
                     task.SetCompleted();
                 }).Finally(error =>
                 {
-                    task.SetFailed(error);
+                    if (error != null)
+                    {
+                        task.SetFailed(error);
+                    }
                 }).Start();
 
                 return task;
@@ -42,7 +45,10 @@ namespace MooPromise.PromiseImpl
                     task.SetCompleted();
                 }).Finally(error =>
                 {
-                    task.SetFailed(error);
+                    if (error != null)
+                    {
+                        task.SetFailed(error);
+                    }
                 }).Start();
 
                 return task;

@@ -269,7 +269,7 @@ namespace MooPromise
             ret.Start();
             ret.SetCompleted();
 
-            return ret;
+            return ret.Immediately;
         }
 
         public IPromise<T> StartNew<T>(T value)
@@ -279,7 +279,7 @@ namespace MooPromise
             ret.SetResult(value);
             ret.SetCompleted();
 
-            return ret;
+            return ret.Immediately;
         }
 
         public IPromise<T> Create<T>(T value)

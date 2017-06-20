@@ -44,7 +44,10 @@
     <Compile Include="Backend\SynchronizationContextBackend.cs" />
     <Compile Include="Backend\WpfDispatcherBackend.cs" />
     <Compile Include="DataStructure\Debug\ListDebugView.cs" />
+    <Compile Include="EnumerablePromise.cs" />
     <Compile Include="ExceptionHandling\ExceptionUtility.cs" />
+    <Compile Include="IEnumerablePromise.cs" />
+    <Compile Include="IPromiseEnumerator.cs" />
     <Compile Include="Promise.cs" />
     <Compile Include="PromiseBackend.cs" />
     <Compile Include="PromiseFactory.cs" />
@@ -59,7 +62,7 @@
     <Compile Include="Synchronization.cs" />
     <Compile Include="TaskRunner\ManualTaskResult.cs" />
     <Compile Include="TaskRunner\Moo\FailureProcessedException.cs" />
-    <Compile Include="TaskRunner\NullableResult.cs" />
+    <Compile Include="DataStructure\NullableResult.cs" />
     <Compile Include="TaskRunner\ITaskFactory.cs" />
     <Compile Include="TaskRunner\Moo\BoundTaskResult.cs" />
     <Compile Include="TaskRunner\Moo\ImmediateTaskResult.cs" />
