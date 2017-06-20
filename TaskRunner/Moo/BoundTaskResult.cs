@@ -14,6 +14,13 @@ namespace MooPromise.TaskRunner.Moo
         {
             this._owner = owner;
             this._current = current;
+
+#if DEBUG
+            if (owner.IsManual && current.IsManual)
+            {
+                //throw new InvalidProgramException();
+            }
+#endif
         }
 
         public ITaskResult Immediately
@@ -58,17 +65,17 @@ namespace MooPromise.TaskRunner.Moo
 
         public ITaskResult Then(Action action)
         {
-            return _current.Then(action);
+            return new BoundTaskResult(_owner, _current.Then(action));
         }
 
         public ITaskResult Catch(Action<Exception> action)
         {
-            return _current.Catch(action);
+            return new BoundTaskResult(_owner, _current.Catch(action));
         }
 
         public ITaskResult Finally(Action action)
         {
-            return _current.Finally(action);
+            return new BoundTaskResult(_owner, _current.Finally(action));
         }
 
         public ITaskResult WithPriority(int priority)
@@ -83,7 +90,7 @@ namespace MooPromise.TaskRunner.Moo
 
         public ITaskResult Then(Func<ITaskResult> action)
         {
-            return _current.Then(action);
+            return new BoundTaskResult(_owner, _current.Then(action));
         }
 
         public bool Cancel()
@@ -93,32 +100,42 @@ namespace MooPromise.TaskRunner.Moo
 
         public ITaskResult Then(Action<NullableResult<object>> action)
         {
-            return _current.Then(action);
+            return new BoundTaskResult(_owner, _current.Then(action));
         }
 
         public ITaskResult Then(Func<NullableResult<object>, ITaskResult> action)
         {
-            return _current.Then(action);
+            return new BoundTaskResult(_owner, _current.Then(action));
         }
 
         public ITaskResult Catch(Action action)
         {
-            return _current.Then(action);
+            return new BoundTaskResult(_owner, _current.Then(action));
         }
 
         public ITaskResult Then(Func<object> action)
         {
-            return _current.Then(action);
+            return new BoundTaskResult(_owner, _current.Then(action));
         }
 
         public ITaskResult Then(Func<NullableResult<object>, object> action)
         {
-            return _current.Then(action);
+            return new BoundTaskResult(_owner, _current.Then(action));
         }
 
         public ITaskResult Finally(Action<Exception> action)
         {
-            return _current.Finally(action);
+            return new BoundTaskResult(_owner, _current.Finally(action));
         }
+
+#if DEBUG
+        public bool IsManual
+        {
+            get 
+            {
+                return _owner.IsManual;
+            }
+        }
+#endif
     }
 }

@@ -324,10 +324,7 @@ namespace MooPromise.PromiseImpl
                     {
                         _waitHandle = new ManualResetEvent(false);
 
-                        this.Immediately.Then(() =>
-                        {
-                            _waitHandle.Set();
-                        }).Immediately.Finally(() =>
+                        this.Immediately.Finally(() =>
                         {
                             _waitHandle.Set();
                         });

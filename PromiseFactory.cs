@@ -365,9 +365,49 @@ namespace MooPromise
             return Serialize(promises.GetEnumerator());
         }
 
+        public IPromise<E> Aggregate<T, E>(IEnumerable<IPromise<T>> items, Func<E, T, int, IPromise<E>> action, E seed)
+        {
+            return Aggregate(seed, 0, items.GetEnumerator(), action);
+        }
+
+        public IPromise<E> Aggregate<T, E>(IEnumerable<IPromise<T>> items, Func<E, T, int, IPromise<E>> action)
+        {
+            return Aggregate(items, action, default(E));
+        }
+
+        public IPromise<E> Aggregate<T, E>(IEnumerable<IPromise<T>> items, Func<E, T, int, E> action, E seed)
+        {
+            return Aggregate(items, (x, y, i) => StartNew(action(x, y, i)), seed);
+        }
+
+        public IPromise<E> Aggregate<T, E>(IEnumerable<IPromise<T>> items, Func<E, T, int, E> action)
+        {
+            return Aggregate(items, action, default(E));
+        }
+
+        public IPromise<E> Aggregate<T, E>(IEnumerable<T> items, Func<E, T, int, IPromise<E>> action, E seed)
+        {
+            return Aggregate(items.Select(x => StartNew(x)), action, seed);
+        }
+
+        public IPromise<E> Aggregate<T, E>(IEnumerable<T> items, Func<E, T, int, IPromise<E>> action)
+        {
+            return Aggregate(items, action, default(E));
+        }
+
+        public IPromise<E> Aggregate<T, E>(IEnumerable<T> items, Func<E, T, int, E> action, E seed)
+        {
+            return Aggregate(items, (x, y, i) => StartNew(action(x, y, i)), seed);
+        }
+
+        public IPromise<E> Aggregate<T, E>(IEnumerable<T> items, Func<E, T, int, E> action)
+        {
+            return Aggregate(items, action, default(E));
+        }
+
         public IPromise<E> Aggregate<T, E>(IEnumerable<IPromise<T>> items, Func<E, T, IPromise<E>> action, E seed)
         {
-            return Aggregate(seed, items.GetEnumerator(), action);
+            return Aggregate(items, (x, y, i) => action(x, y), seed);
         }
 
         public IPromise<E> Aggregate<T, E>(IEnumerable<IPromise<T>> items, Func<E, T, IPromise<E>> action)
@@ -377,7 +417,7 @@ namespace MooPromise
 
         public IPromise<E> Aggregate<T, E>(IEnumerable<IPromise<T>> items, Func<E, T, E> action, E seed)
         {
-            return Aggregate(items, (x, y) => StartNew(action(x, y)), seed);
+            return Aggregate(items, (x, y, i) => action(x, y), seed);
         }
 
         public IPromise<E> Aggregate<T, E>(IEnumerable<IPromise<T>> items, Func<E, T, E> action)
@@ -387,7 +427,7 @@ namespace MooPromise
 
         public IPromise<E> Aggregate<T, E>(IEnumerable<T> items, Func<E, T, IPromise<E>> action, E seed)
         {
-            return Aggregate(items.Select(x => StartNew(x)), action, seed);
+            return Aggregate(items, (x, y, i) => action(x, y), seed);
         }
 
         public IPromise<E> Aggregate<T, E>(IEnumerable<T> items, Func<E, T, IPromise<E>> action)
@@ -397,7 +437,7 @@ namespace MooPromise
 
         public IPromise<E> Aggregate<T, E>(IEnumerable<T> items, Func<E, T, E> action, E seed)
         {
-            return Aggregate(items, (x, y) => StartNew(action(x, y)), seed);
+            return Aggregate(items, (x, y, i) => action(x, y), seed);
         }
 
         public IPromise<E> Aggregate<T, E>(IEnumerable<T> items, Func<E, T, E> action)
@@ -405,11 +445,11 @@ namespace MooPromise
             return Aggregate(items, action, default(E));
         }
 
-        private IPromise<E> Aggregate<T, E>(E prev, IEnumerator<IPromise<T>> items, Func<E, T, IPromise<E>> action)
+        private IPromise<E> Aggregate<T, E>(E prev, int i, IEnumerator<IPromise<T>> items, Func<E, T, int, IPromise<E>> action)
         {
             if (items.MoveNext())
             {
-                return items.Current.Then(x => action(prev, x)).Then(next => Aggregate(next, items, action));
+                return items.Current.Then(x => action(prev, x, i)).Then(next => Aggregate(next, i + 1, items, action));
             }
             else
             {

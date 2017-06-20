@@ -26,19 +26,7 @@ namespace MooPromise
 
         public IPromise Post(Action action)
         {
-            lock (_syncRoot)
-            {
-                if (_last != null)
-                {
-                    _last = _last.Finally(action);
-                }
-                else
-                {
-                    _last = _factory.StartNew(action);
-                }
-
-                return _last;
-            }
+            return Post(action, PromisePriority.Immediate);
         }
 
         public IPromise Post(Action action, PromisePriority priority)
@@ -47,7 +35,12 @@ namespace MooPromise
             {
                 if (_last != null)
                 {
-                    _last = _last.Priority(priority).Finally(action);
+                    var ret = _factory.Create(action, priority);
+                    _last.Immediately.Finally(() =>
+                    {
+                        ret.Start();
+                    });
+                    _last = ret;
                 }
                 else
                 {
@@ -60,24 +53,7 @@ namespace MooPromise
 
         public IPromise Post(Func<IPromise> action)
         {
-            lock (_syncRoot)
-            {
-                if (_last != null)
-                {
-                    var ret = _factory.Create(action);
-                    _last.Finally(() =>
-                    {
-                        ret.Start();
-                    });
-                    _last = ret;
-                }
-                else
-                {
-                    _last = _factory.StartNew(action);
-                }
-
-                return _last;
-            }
+            return Post(action, PromisePriority.Immediate);
         }
 
         public IPromise Post(Func<IPromise> action, PromisePriority priority)
@@ -87,7 +63,7 @@ namespace MooPromise
                 if (_last != null)
                 {
                     var ret = _factory.Create(action, priority);
-                    _last.Finally(() =>
+                    _last.Immediately.Finally(() =>
                     {
                         ret.Start();
                     });
@@ -104,25 +80,7 @@ namespace MooPromise
 
         public IPromise<T> Post<T>(Func<T> action)
         {
-            lock (_syncRoot)
-            {
-                if (_last != null)
-                {
-                    var ret = _factory.Create(action);
-                    _last.Finally(() =>
-                    {
-                        ret.Start();
-                    });
-                    _last = ret.Cast();
-                    return ret;
-                }
-                else
-                {
-                    var ret = _factory.StartNew(action);
-                    _last = ret.Cast();
-                    return ret;
-                }
-            }
+            return Post(action, PromisePriority.Immediate);
         }
 
         public IPromise<T> Post<T>(Func<T> action, PromisePriority priority)
@@ -132,7 +90,7 @@ namespace MooPromise
                 if (_last != null)
                 {
                     var ret = _factory.Create(action, priority);
-                    _last.Finally(() =>
+                    _last.Immediately.Finally(() =>
                     {
                         ret.Start();
                     });
@@ -150,25 +108,7 @@ namespace MooPromise
 
         public IPromise<T> Post<T>(Func<IPromise<T>> action)
         {
-            lock (_syncRoot)
-            {
-                if (_last != null)
-                {
-                    var ret = _factory.Create(action);
-                    _last.Finally(() =>
-                    {
-                        ret.Start();
-                    });
-                    _last = ret.Cast();
-                    return ret;
-                }
-                else
-                {
-                    var ret = _factory.StartNew(action);
-                    _last = ret.Cast();
-                    return ret;
-                }
-            }
+            return Post(action, PromisePriority.Immediate);
         }
 
         public IPromise<T> Post<T>(Func<IPromise<T>> action, PromisePriority priority)
@@ -178,7 +118,7 @@ namespace MooPromise
                 if (_last != null)
                 {
                     var ret = _factory.Create(action, priority);
-                    _last.Finally(() =>
+                    _last.Immediately.Finally(() =>
                     {
                         ret.Start();
                     });

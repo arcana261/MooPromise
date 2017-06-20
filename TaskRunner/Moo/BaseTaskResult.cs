@@ -389,5 +389,15 @@ namespace MooPromise.TaskRunner.Moo
 
             return new AggregateException(exception.Message, newInners);
         }
+
+#if DEBUG
+        public bool IsManual
+        {
+            get
+            {
+                return ThreadPoolResult.IsManual;
+            }
+        }
+#endif
     }
 }

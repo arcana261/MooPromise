@@ -25,5 +25,9 @@ namespace MooPromise.TaskRunner
         Exception Error { get; }
         object Result { get; }
         bool HasResult { get; }
+
+#if DEBUG
+        bool IsManual { get; }
+#endif
     }
 }
