@@ -13,5 +13,9 @@ namespace MooPromise.ThreadPool
         void OnCompleted(Action action);
         void OnFailed(Action<Exception> error);
         Exception Error { get; }
+
+#if DEBUG
+        bool IsManual { get; }
+#endif
     }
 }

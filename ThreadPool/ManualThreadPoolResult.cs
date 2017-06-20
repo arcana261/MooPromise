@@ -22,5 +22,15 @@ namespace MooPromise.ThreadPool
         {
             base.SetFailed(error);
         }
+
+#if DEBUG
+        public override bool IsManual
+        {
+            get
+            {
+                return true;
+            }
+        }
+#endif
     }
 }

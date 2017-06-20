@@ -230,5 +230,15 @@ namespace MooPromise.ThreadPool.Moo
 
             return false;
         }
+
+#if DEBUG
+        public virtual bool IsManual
+        {
+            get
+            {
+                return false;
+            }
+        }
+#endif
     }
 }
