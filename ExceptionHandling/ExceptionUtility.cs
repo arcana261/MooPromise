@@ -7,8 +7,13 @@ namespace MooPromise.ExceptionHandling
 {
     internal static class ExceptionUtility
     {
-        public static AggregateException AggregateExceptions(string message, System.Exception e1, System.Exception e2)
+        public static Exception AggregateExceptions(string message, System.Exception e1, System.Exception e2)
         {
+            if (Object.ReferenceEquals(e1, e2))
+            {
+                return e1;
+            }
+
             if (e1 is AggregateException)
             {
                 if (e2 is AggregateException)

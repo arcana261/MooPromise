@@ -14,54 +14,56 @@ namespace ConsoleApp
         {
             ManualResetEventSlim exit = new ManualResetEventSlim(false);
 
-            var factory = Promise.CreateFactory(PromiseBackend.MooThreadPool);
+            Promise.SetDefaultFactory(PromiseBackend.MooThreadPool);
+            var ctx = Promise.CreateSynchronizationContext();
+            Random _rnd = new Random();
 
-            var result = factory.StartNew(() =>
+            ctx.Post(() =>
             {
-                //throw new ArgumentException();
-                return 1;
-            }).Then(x =>
-            {
-                x = x;
-
-                return factory.StartNew(() =>
+                return Promise.Factory.StartNew(() =>
                 {
-                    return 5;
-                }).Then(y =>
-                {
-                    //throw new ArgumentException();
-                    return y * y;
-                }).Catch(err =>
-                {
-                    Console.WriteLine(err.StackTrace);
+                    Console.WriteLine("1 started");
+                    Thread.Sleep(1000 + _rnd.Next(1000));
+                    Console.WriteLine(1);
                 });
-            }).Finally(() =>
+            });
+
+            ctx.Post(() =>
             {
-                Console.WriteLine();
-            }).Then(y =>
+                return Promise.Factory.StartNew(() =>
+                {
+                    Console.WriteLine("2 started");
+                    Thread.Sleep(1000 + _rnd.Next(1000));
+                    Console.WriteLine(2);
+                });
+            });
+
+            ctx.Post(() =>
             {
-                Console.WriteLine(y);
-            }).Then(() =>
+                return Promise.Factory.StartNew(() =>
+                {
+                    Console.WriteLine("3 started");
+                    Thread.Sleep(1000 + _rnd.Next(1000));
+                    Console.WriteLine(3);
+                });
+            });
+
+            ctx.Post(() =>
             {
-                return "salam";
-            }).Immediately.Finally(() =>
+                return Promise.Factory.StartNew(() =>
+                {
+                    Console.WriteLine("4 started");
+                    Thread.Sleep(1000 + _rnd.Next(1000));
+                    Console.WriteLine(4);
+                });
+            });
+
+            ctx.Post(() =>
             {
-                //throw new IndexOutOfRangeException();
-                Console.WriteLine();
-            }).Catch(error =>
-            {
-                Console.WriteLine(error.StackTrace);
-            }).Finally(() =>
-            {
-                //throw new InvalidCastException();
-                Console.WriteLine();
-            }).Then(x =>
-            {
-                Console.WriteLine(x);
-                exit.Set();
-            }).Catch(error =>
-            {
-                Console.WriteLine(error.StackTrace);
+                return Promise.Factory.StartNew(() =>
+                {
+                    Console.WriteLine("done!");
+                });
             });
 
             exit.Wait();

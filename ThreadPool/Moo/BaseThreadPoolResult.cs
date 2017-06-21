@@ -211,9 +211,8 @@ namespace MooPromise.ThreadPool.Moo
                 if (State == AsyncState.Stopped)
                 {
                     State = AsyncState.Pending;
+                    DoStart();
                 }
-
-                DoStart();
             }
         }
 

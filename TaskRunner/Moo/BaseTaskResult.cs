@@ -378,16 +378,25 @@ namespace MooPromise.TaskRunner.Moo
             });
         }
 
-        private Exception ProcessException(AggregateException exception)
+        private Exception ProcessException(Exception ex)
         {
-            var newInners = exception.InnerExceptions.Where(x => !(x is FailureProcessedException));
-
-            if (newInners.Count() == 1)
+            if (ex is AggregateException)
             {
-                return newInners.First();
-            }
+                AggregateException exception = ex as AggregateException;
 
-            return new AggregateException(exception.Message, newInners);
+                var newInners = exception.InnerExceptions.Where(x => !(x is FailureProcessedException));
+
+                if (newInners.Count() == 1)
+                {
+                    return newInners.First();
+                }
+
+                return new AggregateException(exception.Message, newInners);
+            }
+            else
+            {
+                return ex;
+            }
         }
 
 #if DEBUG
