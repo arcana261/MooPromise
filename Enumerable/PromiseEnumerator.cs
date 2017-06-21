@@ -68,7 +68,7 @@ namespace MooPromise.Enumerable
 
         public static IPromise<IPromiseEnumerator<T>> Create<T>(IEnumerable<T> items)
         {
-            return Create((Promise.Factory.StartNew(items));
+            return Create(Promise.Factory.StartNew(items));
         }
     }
 }

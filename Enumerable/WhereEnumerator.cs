@@ -59,22 +59,22 @@ namespace MooPromise.Enumerable
 
     internal static class WhereEnumerator
     {
-        public static IPromise<IPromiseEnumerator<T>> Create<T>(IPromiseEnumerator<T> items, Func<T, int, IPromise<bool>> predicate)
+        public static IPromiseEnumerator<T> Create<T>(IPromiseEnumerator<T> items, Func<T, int, IPromise<bool>> predicate)
         {
-            return Promise.Factory.StartNew((IPromiseEnumerator<T>)(new WhereEnumerator<T>(items, predicate)));
+            return (IPromiseEnumerator<T>)(new WhereEnumerator<T>(items, predicate));
         }
 
-        public static IPromise<IPromiseEnumerator<T>> Create<T>(IPromiseEnumerator<T> items, Func<T, int, bool> predicate)
+        public static IPromiseEnumerator<T> Create<T>(IPromiseEnumerator<T> items, Func<T, int, bool> predicate)
         {
             return Create(items, (x, y) => Promise.Factory.StartNew(predicate(x, y)));
         }
 
-        public static IPromise<IPromiseEnumerator<T>> Create<T>(IPromiseEnumerator<T> items, Func<T, IPromise<bool>> predicate)
+        public static IPromiseEnumerator<T> Create<T>(IPromiseEnumerator<T> items, Func<T, IPromise<bool>> predicate)
         {
             return Create(items, (x, y) => predicate(x));
         }
 
-        public static IPromise<IPromiseEnumerator<T>> Create<T>(IPromiseEnumerator<T> items, Func<T, bool> predicate)
+        public static IPromiseEnumerator<T> Create<T>(IPromiseEnumerator<T> items, Func<T, bool> predicate)
         {
             return Create(items, (x, y) => predicate(x));
         }
