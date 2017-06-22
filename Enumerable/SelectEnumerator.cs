@@ -58,4 +58,27 @@ namespace MooPromise.Enumerable
             });
         }
     }
+
+    internal static class SelectEnumerator
+    {
+        public static IPromiseEnumerator<E> Create<T, E>(IPromiseEnumerator<T> items, Func<T, int, IPromise<E>> action)
+        {
+            return new SelectEnumerator<T, E>(items, action);
+        }
+
+        public static IPromiseEnumerator<E> Create<T, E>(IPromiseEnumerator<T> items, Func<T, int, E> action)
+        {
+            return Create(items, (x, index) => Promise.Factory.StartNew(action(x, index)));
+        }
+
+        public static IPromiseEnumerator<E> Create<T, E>(IPromiseEnumerator<T> items, Func<T, IPromise<E>> action)
+        {
+            return Create(items, (x, index) => action(x));
+        }
+
+        public static IPromiseEnumerator<E> Create<T, E>(IPromiseEnumerator<T> items, Func<T, E> action)
+        {
+            return Create(items, (x, index) => action(x));
+        }
+    }
 }

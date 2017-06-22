@@ -335,6 +335,14 @@ namespace MooPromise.PromiseImpl
             }
         }
 
+        public IPromiseEnumerable<T> Enumerable
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public T Join()
         {
             AsyncWaitHandle.WaitOne();

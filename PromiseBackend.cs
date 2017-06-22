@@ -7,6 +7,6 @@ namespace MooPromise
 {
     public enum PromiseBackend
     {
-        Default, DotNet, MooThreadPool
+        Default, DotNet, MooThreadPool, Custom
     }
 }

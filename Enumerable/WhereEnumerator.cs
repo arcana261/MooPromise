@@ -61,7 +61,7 @@ namespace MooPromise.Enumerable
     {
         public static IPromiseEnumerator<T> Create<T>(IPromiseEnumerator<T> items, Func<T, int, IPromise<bool>> predicate)
         {
-            return (IPromiseEnumerator<T>)(new WhereEnumerator<T>(items, predicate));
+            return new WhereEnumerator<T>(items, predicate);
         }
 
         public static IPromiseEnumerator<T> Create<T>(IPromiseEnumerator<T> items, Func<T, int, bool> predicate)

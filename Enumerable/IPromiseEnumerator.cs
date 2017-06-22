@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MooPromise
+namespace MooPromise.Enumerable
 {
-    public interface IPromiseEnumerator<T>
+    internal interface IPromiseEnumerator<T>
     {
         IPromise<IPromiseEnumerator<T>> MoveNext();
         T Current { get; }

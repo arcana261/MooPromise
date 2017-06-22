@@ -1,4 +1,5 @@
 ﻿using MooPromise.Backend;
+using MooPromise.Enumerable;
 using MooPromise.PromiseImpl;
 using System;
 using System.Collections.Generic;
@@ -113,6 +114,114 @@ namespace MooPromise
         public static void SetDefaultFactory(System.Windows.Threading.Dispatcher dispatcher)
         {
             SetDefaultFactory(new WpfDispatcherBackend(dispatcher));
+        }
+
+        public static PromiseBackend DefaultFactory
+        {
+            get
+            {
+                lock (_syncRoot)
+                {
+                    if (_factory == null)
+                    {
+                        return PromiseBackend.Default;
+                    }
+                    else if (_backend == null)
+                    {
+                        return _backendType;
+                    }
+
+                    return PromiseBackend.Custom;
+                }
+            }
+
+            set
+            {
+                lock (_syncRoot)
+                {
+                    SetDefaultFactory(value);
+                }
+            }
+        }
+
+        public static IPromiseEnumerable<T> Enumerable<T>(IPromise<IEnumerable<T>> items)
+        {
+            return new PromiseEnumerable<T>(items);
+        }
+
+        public static IPromiseEnumerable<T> Enumerable<T>(IPromise<ICollection<T>> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<T>>());
+        }
+
+        public static IPromiseEnumerable<T> Enumerable<T>(IPromise<IList<T>> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<T>>());
+        }
+
+        public static IPromiseEnumerable<T> Enumerable<T>(IPromise<ISet<T>> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<T>>());
+        }
+
+        public static IPromiseEnumerable<KeyValuePair<K, V>> Enumerable<K, V>(IPromise<IDictionary<K, V>> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<KeyValuePair<K, V>>>());
+        }
+
+        public static IPromiseEnumerable<T> Enumerable<T>(IPromise<T[]> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<T>>());
+        }
+
+        public static IPromiseEnumerable<T> Enumerable<T>(IPromise<List<T>> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<T>>());
+        }
+
+        public static IPromiseEnumerable<T> Enumerable<T>(IPromise<HashSet<T>> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<T>>());
+        }
+
+        public static IPromiseEnumerable<T> Enumerable<T>(IPromise<SortedSet<T>> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<T>>());
+        }
+
+        public static IPromiseEnumerable<KeyValuePair<K, V>> Enumerable<K, V>(IPromise<SortedList<K, V>> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<KeyValuePair<K, V>>>());
+        }
+
+        public static IPromiseEnumerable<T> Enumerable<T>(IPromise<LinkedList<T>> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<T>>());
+        }
+
+        public static IPromiseEnumerable<KeyValuePair<K, V>> Enumerable<K, V>(IPromise<Dictionary<K, V>> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<KeyValuePair<K, V>>>());
+        }
+
+        public static IPromiseEnumerable<T> Enumerable<T>(IPromise<Stack<T>> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<T>>());
+        }
+
+        public static IPromiseEnumerable<T> Enumerable<T>(IPromise<Queue<T>> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<T>>());
+        }
+
+        public static IPromiseEnumerable<T> Enumerable<T>(IEnumerable<T> items)
+        {
+            return new PromiseEnumerable<T>(items);
+        }
+
+        public static IPromiseEnumerable<KeyValuePair<K, V>> Enumerable<K, V>(IPromise<SortedDictionary<K, V>> items)
+        {
+            return Enumerable(items.Cast<IEnumerable<KeyValuePair<K, V>>>());
         }
 
         public static PromiseFactory CreateFactory(IBackend backend)
