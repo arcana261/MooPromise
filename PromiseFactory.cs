@@ -305,13 +305,16 @@ namespace MooPromise
             return ret;
         }
 
-        public IPromise Parallelize(IEnumerable<IPromise> promises)
+        public IPromise Sleep(int ms)
         {
-            if (promises == null)
+            return StartNew(() =>
             {
-                return StartNew();
-            }
+                Thread.Sleep(ms);
+            });
+        }
 
+        public IPromise JoinParallel(IEnumerable<IPromise> promises)
+        {
             var result = new ManualPromise(_taskFactory);
             result.Start();
 
@@ -335,19 +338,16 @@ namespace MooPromise
             return result;
         }
 
-        public IPromise Sleep(int ms)
+        public IPromise JoinParallel<T>(IEnumerable<IPromise<T>> promises)
         {
-            return StartNew(() =>
-            {
-                Thread.Sleep(ms);
-            });
+            return JoinParallel(promises.Select(x => x.Cast()));
         }
 
-        private IPromise Serialize(IEnumerator<IPromise> promises)
+        private IPromise JoinSerial(IEnumerator<IPromise> promises)
         {
             if (promises.MoveNext())
             {
-                return promises.Current.Then(() => Serialize(promises));
+                return promises.Current.Then(() => JoinSerial(promises));
             }
             else
             {
@@ -355,14 +355,14 @@ namespace MooPromise
             }
         }
 
-        public IPromise Serialize(IEnumerable<IPromise> promises)
+        public IPromise JoinSerial(IEnumerable<IPromise> promises)
         {
-            if (promises == null)
-            {
-                return StartNew();
-            }
+            return JoinSerial(promises.GetEnumerator());
+        }
 
-            return Serialize(promises.GetEnumerator());
+        public IPromise JoinSerial<T>(IEnumerable<IPromise<T>> promises)
+        {
+            return JoinSerial(promises.Select(x => x.Cast()));
         }
 
         public IPromise<E> Aggregate<T, E>(IEnumerable<IPromise<T>> items, Func<E, T, int, IPromise<E>> action, E seed)

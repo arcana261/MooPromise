@@ -224,6 +224,26 @@ namespace MooPromise
             return Enumerable(items.Cast<IEnumerable<KeyValuePair<K, V>>>());
         }
 
+        public static IPromise JoinParallel(IEnumerable<IPromise> promises)
+        {
+            return Factory.JoinParallel(promises);
+        }
+
+        public static IPromise JoinParallel<T>(IEnumerable<IPromise<T>> promises)
+        {
+            return Factory.JoinParallel(promises);
+        }
+
+        public static IPromise JoinSerial(IEnumerable<IPromise> promises)
+        {
+            return Factory.JoinSerial(promises);
+        }
+
+        public static IPromise JoinSerial<T>(IEnumerable<IPromise<T>> promises)
+        {
+            return Factory.JoinSerial(promises);
+        }
+
         public static PromiseFactory CreateFactory(IBackend backend)
         {
             return new PromiseFactory(backend);
@@ -254,12 +274,12 @@ namespace MooPromise
             return new PromiseFactory();
         }
 
-        public static Synchronization CreateSynchronizationContext(PromiseFactory factory)
+        public static PromiseSynchronizationContext CreateSynchronizationContext(PromiseFactory factory)
         {
-            return new Synchronization(factory);
+            return new PromiseSynchronizationContext(factory);
         }
 
-        public static Synchronization CreateSynchronizationContext()
+        public static PromiseSynchronizationContext CreateSynchronizationContext()
         {
             return CreateSynchronizationContext(Factory);
         }

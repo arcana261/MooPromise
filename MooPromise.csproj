@@ -66,7 +66,7 @@
     <Compile Include="PromiseImpl\ImmediatePromise.cs" />
     <Compile Include="PromiseImpl\PriorityPromise.cs" />
     <Compile Include="PromiseImpl\NormalPromise.cs" />
-    <Compile Include="Synchronization.cs" />
+    <Compile Include="PromiseSynchronizationContext.cs" />
     <Compile Include="TaskRunner\ManualTaskResult.cs" />
     <Compile Include="TaskRunner\Moo\FailureProcessedException.cs" />
     <Compile Include="DataStructure\NullableResult.cs" />

@@ -5,20 +5,20 @@ using System.Text;
 
 namespace MooPromise
 {
-    public class Synchronization
+    public class PromiseSynchronizationContext
     {
         private PromiseFactory _factory;
         private IPromise _last;
         private object _syncRoot;
 
-        public Synchronization(PromiseFactory factory)
+        public PromiseSynchronizationContext(PromiseFactory factory)
         {
             this._factory = factory;
             this._last = null;
             this._syncRoot = new object();
         }
 
-        public Synchronization()
+        public PromiseSynchronizationContext()
             : this(Promise.Factory)
         {
 
