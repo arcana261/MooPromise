@@ -131,7 +131,7 @@ namespace MooPromise.ThreadPool.Moo
         {
             lock (SyncRoot)
             {
-                if (State == AsyncState.Running || State == AsyncState.Pending)
+                if (State == AsyncState.Running || State == AsyncState.Pending || (error is OperationCanceledException && State == AsyncState.Stopped))
                 {
                     if (error == null)
                     {
