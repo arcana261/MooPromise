@@ -110,6 +110,16 @@ namespace MooPromise
             return Backend.IsCurrentThreadManagedByBackend();
         }
 
+        public IManualPromise CreateManual()
+        {
+            return new ManualPromise(_taskFactory);
+        }
+
+        public IManualPromise<T> CreateManual<T>()
+        {
+            return new ManualPromise<T>(_taskFactory);
+        }
+
         public IPromise Create(Action action)
         {
             return Create(action, PromisePriority.Normal);

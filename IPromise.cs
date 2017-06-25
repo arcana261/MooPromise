@@ -30,6 +30,12 @@ namespace MooPromise
         void Join();
     }
 
+    public interface IManualPromise : IPromise
+    {
+        void Resolve();
+        void Reject(Exception error);
+    }
+
     public interface IPromise<T> : IPromiseBase
     {
         IPromise Then(Action<T> action);
@@ -50,5 +56,11 @@ namespace MooPromise
         IPromise<T> Priority(PromisePriority priority);
         T Result { get; }
         T Join();
+    }
+
+    public interface IManualPromise<T> : IPromise<T>
+    {
+        void Resolve(T result);
+        void Reject(Exception error);
     }
 }

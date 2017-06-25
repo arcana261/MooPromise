@@ -315,9 +315,19 @@ namespace MooPromise
             _promise = factory.StartNew(() =>
             {
                 Exception error = null;
-                promise(() => { error = null; }, x => { error = x; });
+                bool hasError = false;
 
-                if (error != null)
+                promise(() =>
+                {
+                    error = null;
+                    hasError = false;
+                }, x =>
+                { 
+                    error = x;
+                    hasError = true;
+                });
+
+                if (hasError)
                 {
                     throw error;
                 }
@@ -528,10 +538,20 @@ namespace MooPromise
             {
                 Exception error = null;
                 T result = default(T);
+                bool hasError = false;
 
-                promise(x => { error = null; result = x; }, x => { error = x; });
+                promise(x =>
+                {
+                    error = null;
+                    result = x;
+                    hasError = false;
+                }, x =>
+                {
+                    error = x;
+                    hasError = true;
+                });
 
-                if (error != null)
+                if (hasError)
                 {
                     throw error;
                 }
