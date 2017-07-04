@@ -96,12 +96,27 @@ namespace MooPromise.Backend.Moo
             while (!_shutdown)
             {
                 MooThreadPoolTask task = null;
+                bool clearBusy = false;
 
                 while (!_shutdown && task == null)
                 {
+                    if (clearBusy)
+                    {
+                        _busy = false;
+                        clearBusy = false;
+                    }
+
                     if (!_context.Queue.TryPop(out task))
                     {
-                        Thread.Sleep(1);
+                        if (_busy)
+                        {
+                            clearBusy = true;
+                            _context.TaskAddedSignal.WaitOne(5000);
+                        }
+                        else
+                        {
+                            _context.TaskAddedSignal.WaitOne();
+                        }
                     }
                     else
                     {
@@ -112,6 +127,7 @@ namespace MooPromise.Backend.Moo
                 if (task != null)
                 {
                     _busy = true;
+                    clearBusy = false;
 
                     try
                     {
@@ -121,8 +137,6 @@ namespace MooPromise.Backend.Moo
                     {
                         Environment.FailFast("Unhandled exception while executing moo backend task", error);
                     }
-
-                    _busy = false;
                 }
             }
         }

@@ -81,7 +81,7 @@ namespace MooPromise.Backend
                 {
                     freeThreads = _runners.Where(x => !x.IsBusy).Take(_runners.Count - _minThreads).ToList();
 
-                    if (freeThreads.Count >= ((_runners.Count - _minThreads) / 2))
+                    if (freeThreads.Count >= ((_runners.Count - _minThreads) / 2) && freeThreads.Count >= 4)
                     {
                         foreach (var thread in freeThreads)
                         {
@@ -175,6 +175,7 @@ namespace MooPromise.Backend
 
                 bool shouldExpand = _runners.Count < _maxThreads && _runners.All(x => x.IsBusy);
                 _context.Queue.Add(task, priority);
+                _context.TaskAddedSignal.Set();
 
                 if (shouldExpand)
                 {

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace MooPromise.Backend.Moo
 {
@@ -12,9 +13,16 @@ namespace MooPromise.Backend.Moo
         public MooBackendContext()
         {
             Queue = new ConcurrentPriorityQueue<MooThreadPoolTask>();
+            TaskAddedSignal = new AutoResetEvent(false);
         }
 
         public IPriorityQueue<MooThreadPoolTask> Queue
+        {
+            get;
+            private set;
+        }
+
+        public AutoResetEvent TaskAddedSignal
         {
             get;
             private set;
