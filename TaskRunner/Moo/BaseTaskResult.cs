@@ -365,18 +365,39 @@ namespace MooPromise.TaskRunner.Moo
 
         public ITaskResult Then(Func<object> action)
         {
-            return Then(() =>
-            {
-                Result = action();
-            });
+            return Then(new Func<NullableResult<object>, object>(result => action()));
         }
 
         public ITaskResult Then(Func<NullableResult<object>, object> action)
         {
-            return Then(x =>
+            var ret = new ManualThreadPoolResult();
+            ret.Start();
+            var task = CreateTask(ret);
+
+            ThreadPoolResult.OnCompleted(() =>
             {
-                Result = action(x);
+                var subResult = CreateResult(() =>
+                {
+                    var nextResult = action(HasResult ? new NullableResult<object>(Result) : new NullableResult<object>());
+
+                    task.Result = nextResult;
+                    ret.SetCompleted();
+                });
+
+                subResult.OnFailed(error =>
+                {
+                    ret.SetFailed(error);
+                });
+
+                subResult.Start();
             });
+
+            ThreadPoolResult.OnFailed(error =>
+            {
+                ret.SetFailed(error);
+            });
+
+            return new BoundTaskResult(this, task);
         }
 
         private Exception ProcessException(Exception ex)
