@@ -296,7 +296,7 @@ namespace MooPromise.PromiseImpl
 
         public IPromise<F> Then<F>(Func<F> action)
         {
-            return CreatePromise<F>(ProcessTaskResult(TaskResult).Then(() => (object)action));
+            return CreatePromise<F>(ProcessTaskResult(TaskResult).Then(() => (object)action()));
         }
 
         public IPromise<F> Then<F>(Func<IPromise<F>> action)

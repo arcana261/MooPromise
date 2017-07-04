@@ -135,6 +135,8 @@ namespace MooPromise.Backend.Moo
 
         private void Dispose(bool disposing)
         {
+            bool join = false;
+
             lock (_syncRoot)
             {
                 if (!_disposed)
@@ -145,9 +147,14 @@ namespace MooPromise.Backend.Moo
 
                     if (!isInside)
                     {
-                        _thread.Join();
+                        join = true;
                     }
                 }
+            }
+
+            if (join)
+            {
+                //_thread.Join();
             }
         }
     }
