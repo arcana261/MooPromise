@@ -214,9 +214,9 @@ namespace MooPromise
             return Enumerable(items.Cast<IEnumerable<T>>());
         }
 
-        public static IPromiseEnumerable<T> Enumerable<T>(IEnumerable<T> items)
+        public static IPromiseEnumerable<T> Enumerable<T>(PromiseFactory factory, IEnumerable<T> items)
         {
-            return new PromiseEnumerable<T>(items);
+            return new PromiseEnumerable<T>(factory, items);
         }
 
         public static IPromiseEnumerable<KeyValuePair<K, V>> Enumerable<K, V>(IPromise<SortedDictionary<K, V>> items)
@@ -361,6 +361,14 @@ namespace MooPromise
             : this(Factory, promise)
         {
 
+        }
+
+        PromiseFactory IPromiseBase.Factory
+        {
+            get
+            {
+                return _promise.Factory;
+            }
         }
 
         public IPromise Then(Action action)
@@ -587,6 +595,14 @@ namespace MooPromise
             : this(Promise.Factory, promise)
         {
 
+        }
+
+        PromiseFactory IPromiseBase.Factory
+        {
+            get
+            {
+                return _promise.Factory;
+            }
         }
 
         public IPromise Then(Action<T> action)

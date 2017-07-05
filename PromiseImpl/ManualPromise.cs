@@ -8,7 +8,7 @@ namespace MooPromise.PromiseImpl
 {
     internal class ManualPromise : NormalPromise, IManualPromise
     {
-        public ManualPromise(ITaskFactory factory) : base(factory, new ManualTaskResult(factory.ThreadPool))
+        public ManualPromise(PromiseFactory promiseFactory, ITaskFactory factory) : base(promiseFactory, factory, new ManualTaskResult(factory.ThreadPool))
         {
         }
 
@@ -43,7 +43,7 @@ namespace MooPromise.PromiseImpl
 
     internal class ManualPromise<T> : NormalPromise<T>, IManualPromise<T>
     {
-        public ManualPromise(ITaskFactory factory) : base(factory, new ManualTaskResult(factory.ThreadPool))
+        public ManualPromise(PromiseFactory promiseFactory, ITaskFactory factory) : base(promiseFactory, factory, new ManualTaskResult(factory.ThreadPool))
         {
         }
 

@@ -9,5 +9,6 @@ namespace MooPromise.Enumerable
     {
         IPromise<IPromiseEnumerator<T>> MoveNext();
         T Current { get; }
+        PromiseFactory Factory { get; }
     }
 }

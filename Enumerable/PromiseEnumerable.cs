@@ -20,8 +20,8 @@ namespace MooPromise.Enumerable
 
         }
 
-        public PromiseEnumerable(IEnumerable<T> items)
-            : this(PromiseEnumerator.Create(items))
+        public PromiseEnumerable(PromiseFactory factory, IEnumerable<T> items)
+            : this(PromiseEnumerator.Create(factory, items))
         {
 
         }
@@ -149,6 +149,64 @@ namespace MooPromise.Enumerable
         public IPromiseEnumerable<T> Finally(Action action)
         {
             return new PromiseEnumerable<T>(_items.Finally(action));
+        }
+
+        public IPromise<long> LongCount(Func<T, int, IPromise<bool>> filter)
+        {
+            return _items.Then(list => LongCountAlgorithm.LongCount(list, filter));
+        }
+
+        public IPromise<long> LongCount(Func<T, int, bool> filter)
+        {
+            return _items.Then(list => LongCountAlgorithm.LongCount(list, filter));
+        }
+
+        public IPromise<long> LongCount(Func<T, IPromise<bool>> filter)
+        {
+            return _items.Then(list => LongCountAlgorithm.LongCount(list, filter));
+        }
+
+        public IPromise<long> LongCount(Func<T, bool> filter)
+        {
+            return _items.Then(list => LongCountAlgorithm.LongCount(list, filter));
+        }
+
+        public IPromise<long> LongCount()
+        {
+            return _items.Then(list => LongCountAlgorithm.LongCount(list));
+        }
+
+        public IPromise<int> Count(Func<T, int, IPromise<bool>> filter)
+        {
+            return _items.Then(list => CountAlgorithm.Count(list, filter));
+        }
+
+        public IPromise<int> Count(Func<T, int, bool> filter)
+        {
+            return _items.Then(list => CountAlgorithm.Count(list, filter));
+        }
+
+        public IPromise<int> Count(Func<T, IPromise<bool>> filter)
+        {
+            return _items.Then(list => CountAlgorithm.Count(list, filter));
+        }
+
+        public IPromise<int> Count(Func<T, bool> filter)
+        {
+            return _items.Then(list => CountAlgorithm.Count(list, filter));
+        }
+
+        public IPromise<int> Count()
+        {
+            return _items.Then(list => CountAlgorithm.Count(list));
+        }
+
+        public PromiseFactory Factory
+        {
+            get
+            {
+                return _items.Factory;
+            }
         }
     }
 }

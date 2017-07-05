@@ -32,5 +32,6 @@ namespace MooPromise
         IPromiseEnumerable<T> Catch(Action action);
         IPromiseEnumerable<T> Finally(Action<Exception> action);
         IPromiseEnumerable<T> Finally(Action action);
+        PromiseFactory Factory { get; }
     }
 }

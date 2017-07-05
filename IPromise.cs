@@ -13,6 +13,7 @@ namespace MooPromise
         Exception Error { get; }
         AsyncState State { get; }
         WaitHandle AsyncWaitHandle { get; }
+        PromiseFactory Factory { get; }
     }
 
     public interface IPromise : IPromiseBase

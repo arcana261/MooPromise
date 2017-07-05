@@ -45,7 +45,9 @@
     <Compile Include="Backend\WpfDispatcherBackend.cs" />
     <Compile Include="DataStructure\Debug\ListDebugView.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="Enumerable\CountAlgorithm.cs" />
     <Compile Include="Enumerable\EachAlgorithm.cs" />
+    <Compile Include="Enumerable\LongCountAlgorithm.cs" />
     <Compile Include="Enumerable\PromiseEnumerable.cs" />
     <Compile Include="Enumerable\PromiseEnumerator.cs" />
     <Compile Include="Enumerable\ReduceAlgorithm.cs" />

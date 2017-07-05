@@ -48,7 +48,7 @@ namespace MooPromise.Enumerable
             {
                 if (next == null)
                 {
-                    return Promise.Factory.StartNew((IPromiseEnumerator<E>)null);
+                    return this.Factory.StartNew((IPromiseEnumerator<E>)null);
                 }
 
                 return _predicate(next.Current, _index).Then(newValue =>
@@ -56,6 +56,14 @@ namespace MooPromise.Enumerable
                     return (IPromiseEnumerator<E>)(new SelectEnumerator<T, E>(_index + 1, newValue, _items, _predicate));
                 });
             });
+        }
+
+        public PromiseFactory Factory
+        {
+            get
+            {
+                return _items.Factory;
+            }
         }
     }
 
@@ -68,7 +76,7 @@ namespace MooPromise.Enumerable
 
         public static IPromiseEnumerator<E> Create<T, E>(IPromiseEnumerator<T> items, Func<T, int, E> action)
         {
-            return Create(items, (x, index) => Promise.Factory.StartNew(action(x, index)));
+            return Create(items, (x, index) => items.Factory.StartNew(action(x, index)));
         }
 
         public static IPromiseEnumerator<E> Create<T, E>(IPromiseEnumerator<T> items, Func<T, IPromise<E>> action)

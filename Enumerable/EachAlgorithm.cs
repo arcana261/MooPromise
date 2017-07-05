@@ -17,7 +17,7 @@ namespace MooPromise.Enumerable
             return Each(items, (x, index) =>
             {
                 action(x, index);
-                return Promise.Factory.StartNew();
+                return items.Factory.StartNew();
             });
         }
 

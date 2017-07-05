@@ -112,12 +112,12 @@ namespace MooPromise
 
         public IManualPromise CreateManual()
         {
-            return new ManualPromise(_taskFactory);
+            return new ManualPromise(this, _taskFactory);
         }
 
         public IManualPromise<T> CreateManual<T>()
         {
-            return new ManualPromise<T>(_taskFactory);
+            return new ManualPromise<T>(this, _taskFactory);
         }
 
         public IPromise Create(Action action)
@@ -135,11 +135,11 @@ namespace MooPromise
             switch (priority)
             {
                 case PromisePriority.Normal:
-                    return new NormalPromise(_taskFactory, _taskFactory.Create(action));
+                    return new NormalPromise(this, _taskFactory, _taskFactory.Create(action));
                 case PromisePriority.Immediate:
-                    return new NormalPromise(_taskFactory, _taskFactory.CreateImmediately(action));
+                    return new NormalPromise(this, _taskFactory, _taskFactory.CreateImmediately(action));
                 default:
-                    return new NormalPromise(_taskFactory, _taskFactory.Create(action, (int)priority));
+                    return new NormalPromise(this, _taskFactory, _taskFactory.Create(action, (int)priority));
             }
         }
 
@@ -167,11 +167,11 @@ namespace MooPromise
             switch (priority)
             {
                 case PromisePriority.Normal:
-                    return new NormalPromise<T>(_taskFactory, _taskFactory.Create(() => (object)action()));
+                    return new NormalPromise<T>(this, _taskFactory, _taskFactory.Create(() => (object)action()));
                 case PromisePriority.Immediate:
-                    return new NormalPromise<T>(_taskFactory, _taskFactory.CreateImmediately(() => (object)action()));
+                    return new NormalPromise<T>(this, _taskFactory, _taskFactory.CreateImmediately(() => (object)action()));
                 default:
-                    return new NormalPromise<T>(_taskFactory, _taskFactory.Create(() => (object)action(), (int)priority));
+                    return new NormalPromise<T>(this, _taskFactory, _taskFactory.Create(() => (object)action(), (int)priority));
             }
         }
 
@@ -204,11 +204,11 @@ namespace MooPromise
             switch (priority)
             {
                 case PromisePriority.Normal:
-                    return new NormalPromise(_taskFactory, _taskFactory.Create(() => PromiseHelpers.ConvertPromiseToTaskResult(_taskFactory, action())));
+                    return new NormalPromise(this, _taskFactory, _taskFactory.Create(() => PromiseHelpers.ConvertPromiseToTaskResult(_taskFactory, action())));
                 case PromisePriority.Immediate:
-                    return new NormalPromise(_taskFactory, _taskFactory.CreateImmediately(() => PromiseHelpers.ConvertPromiseToTaskResult(_taskFactory, action())));
+                    return new NormalPromise(this, _taskFactory, _taskFactory.CreateImmediately(() => PromiseHelpers.ConvertPromiseToTaskResult(_taskFactory, action())));
                 default:
-                    return new NormalPromise(_taskFactory, _taskFactory.Create(() => PromiseHelpers.ConvertPromiseToTaskResult(_taskFactory, action()), (int)priority));
+                    return new NormalPromise(this, _taskFactory, _taskFactory.Create(() => PromiseHelpers.ConvertPromiseToTaskResult(_taskFactory, action()), (int)priority));
             }
         }
 
@@ -241,11 +241,11 @@ namespace MooPromise
             switch (priority)
             {
                 case PromisePriority.Normal:
-                    return new NormalPromise<T>(_taskFactory, _taskFactory.Create(() => PromiseHelpers.ConvertPromiseToTaskResult<T>(_taskFactory, action())));
+                    return new NormalPromise<T>(this, _taskFactory, _taskFactory.Create(() => PromiseHelpers.ConvertPromiseToTaskResult<T>(_taskFactory, action())));
                 case PromisePriority.Immediate:
-                    return new NormalPromise<T>(_taskFactory, _taskFactory.CreateImmediately(() => PromiseHelpers.ConvertPromiseToTaskResult<T>(_taskFactory, action())));
+                    return new NormalPromise<T>(this, _taskFactory, _taskFactory.CreateImmediately(() => PromiseHelpers.ConvertPromiseToTaskResult<T>(_taskFactory, action())));
                 default:
-                    return new NormalPromise<T>(_taskFactory, _taskFactory.Create(() => PromiseHelpers.ConvertPromiseToTaskResult<T>(_taskFactory, action()), (int)priority));
+                    return new NormalPromise<T>(this, _taskFactory, _taskFactory.Create(() => PromiseHelpers.ConvertPromiseToTaskResult<T>(_taskFactory, action()), (int)priority));
             }
         }
 
@@ -275,7 +275,7 @@ namespace MooPromise
 
         public IPromise StartNew()
         {
-            var ret = new ManualPromise(_taskFactory);
+            var ret = new ManualPromise(this, _taskFactory);
             ret.Start();
             ret.SetCompleted();
 
@@ -284,7 +284,7 @@ namespace MooPromise
 
         public IPromise<T> StartNew<T>(T value)
         {
-            var ret = new ManualPromise<T>(_taskFactory);
+            var ret = new ManualPromise<T>(this, _taskFactory);
             ret.Start();
             ret.SetResult(value);
             ret.SetCompleted();
@@ -299,7 +299,7 @@ namespace MooPromise
 
         public IPromise StartFailed(Exception error)
         {
-            var ret = new ManualPromise(_taskFactory);
+            var ret = new ManualPromise(this, _taskFactory);
             ret.Start();
             ret.SetFailed(error);
 
@@ -308,7 +308,7 @@ namespace MooPromise
 
         public IPromise<T> StartFailed<T>(Exception error)
         {
-            var ret = new ManualPromise<T>(_taskFactory);
+            var ret = new ManualPromise<T>(this, _taskFactory);
             ret.Start();
             ret.SetFailed(error);
 
@@ -325,7 +325,7 @@ namespace MooPromise
 
         public IPromise JoinParallel(IEnumerable<IPromise> promises)
         {
-            var result = new ManualPromise(_taskFactory);
+            var result = new ManualPromise(this, _taskFactory);
             result.Start();
 
             foreach (var promise in promises)

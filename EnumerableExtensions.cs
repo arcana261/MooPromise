@@ -8,9 +8,9 @@ namespace MooPromise
 {
     public static class EnumerableExtensions
     {
-        public static IPromiseEnumerable<T> Promesify<T>(this IEnumerable<T> items)
+        public static IPromiseEnumerable<T> Promesify<T>(this IEnumerable<T> items, PromiseFactory factory)
         {
-            return new PromiseEnumerable<T>(items);
+            return new PromiseEnumerable<T>(factory, items);
         }
 
         public static IPromise JoinParallel(this IEnumerable<IPromise> items)

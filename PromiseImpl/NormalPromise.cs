@@ -8,7 +8,7 @@ namespace MooPromise.PromiseImpl
 {
     internal class NormalPromise : BasePromise
     {
-        public NormalPromise(ITaskFactory factory, ITaskResult task) : base(factory, task)
+        public NormalPromise(PromiseFactory promiseFactory, ITaskFactory factory, ITaskResult task) : base(promiseFactory, factory, task)
         {
         }
 
@@ -16,13 +16,13 @@ namespace MooPromise.PromiseImpl
         {
             get
             {
-                return new ImmediatePromise(TaskFactory, TaskResult);
+                return new ImmediatePromise(Factory, TaskFactory, TaskResult);
             }
         }
 
         public override IPromise Priority(PromisePriority priority)
         {
-            return new PriorityPromise(TaskFactory, TaskResult, priority);
+            return new PriorityPromise(Factory, TaskFactory, TaskResult, priority);
         }
 
         protected override ITaskResult ProcessTaskResult(ITaskResult result)
@@ -33,7 +33,7 @@ namespace MooPromise.PromiseImpl
 
     internal class NormalPromise<T> : BasePromise<T>
     {
-        public NormalPromise(ITaskFactory factory, ITaskResult task) : base(factory, task)
+        public NormalPromise(PromiseFactory promiseFactory, ITaskFactory factory, ITaskResult task) : base(promiseFactory, factory, task)
         {
         }
 
@@ -41,13 +41,13 @@ namespace MooPromise.PromiseImpl
         {
             get
             {
-                return new ImmediatePromise<T>(TaskFactory, TaskResult);
+                return new ImmediatePromise<T>(Factory, TaskFactory, TaskResult);
             }
         }
 
         public override IPromise<T> Priority(PromisePriority priority)
         {
-            return new PriorityPromise<T>(TaskFactory, TaskResult, priority);
+            return new PriorityPromise<T>(Factory, TaskFactory, TaskResult, priority);
         }
 
         protected override ITaskResult ProcessTaskResult(ITaskResult result)

@@ -11,11 +11,18 @@ namespace MooPromise.PromiseImpl
     {
         private ManualResetEvent _waitHandle;
 
-        public BasePromise(ITaskFactory factory, ITaskResult task)
+        public BasePromise(PromiseFactory promiseFactory, ITaskFactory factory, ITaskResult task)
         {
             this.TaskFactory = factory;
             this.TaskResult = task;
             this._waitHandle = null;
+            this.Factory = promiseFactory;
+        }
+
+        public PromiseFactory Factory
+        {
+            get;
+            private set;
         }
 
         protected ITaskResult TaskResult
@@ -32,12 +39,12 @@ namespace MooPromise.PromiseImpl
 
         private IPromise CreatePromise(ITaskResult result)
         {
-            return new NormalPromise(TaskFactory, result);
+            return new NormalPromise(Factory, TaskFactory, result);
         }
 
         private IPromise<T> CreatePromise<T>(ITaskResult result)
         {
-            return new NormalPromise<T>(TaskFactory, result);
+            return new NormalPromise<T>(Factory, TaskFactory, result);
         }
 
         protected abstract ITaskResult ProcessTaskResult(ITaskResult result);
@@ -162,11 +169,18 @@ namespace MooPromise.PromiseImpl
     {
         private ManualResetEvent _waitHandle;
 
-        public BasePromise(ITaskFactory factory, ITaskResult task)
+        public BasePromise(PromiseFactory promiseFactory, ITaskFactory factory, ITaskResult task)
         {
             this.TaskFactory = factory;
             this.TaskResult = task;
             this._waitHandle = null;
+            this.Factory = promiseFactory;
+        }
+
+        public PromiseFactory Factory
+        {
+            get;
+            private set;
         }
 
         protected ITaskResult TaskResult
@@ -183,12 +197,12 @@ namespace MooPromise.PromiseImpl
 
         private IPromise CreatePromise(ITaskResult result)
         {
-            return new NormalPromise(TaskFactory, result);
+            return new NormalPromise(Factory, TaskFactory, result);
         }
 
         private IPromise<F> CreatePromise<F>(ITaskResult result)
         {
-            return new NormalPromise<F>(TaskFactory, result);
+            return new NormalPromise<F>(Factory, TaskFactory, result);
         }
 
         protected abstract ITaskResult ProcessTaskResult(ITaskResult result);

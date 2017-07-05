@@ -11,14 +11,16 @@ namespace MooPromise.Enumerable
         private NullableResult<T> _current;
         private IEnumerator<IPromise<T>> _items;
 
-        public PromiseEnumerator(T current, IEnumerator<IPromise<T>> items)
+        public PromiseEnumerator(PromiseFactory factory, T current, IEnumerator<IPromise<T>> items)
         {
+            this.Factory = factory;
             _current = new NullableResult<T>(current);
             _items = items;
         }
 
-        public PromiseEnumerator(IEnumerator<IPromise<T>> items)
+        public PromiseEnumerator(PromiseFactory factory, IEnumerator<IPromise<T>> items)
         {
+            this.Factory = factory;
             _current = new NullableResult<T>();
             _items = items;
         }
@@ -40,12 +42,19 @@ namespace MooPromise.Enumerable
         {
             if (_items.MoveNext())
             {
-                return _items.Current.Then(x => (IPromiseEnumerator<T>)(new PromiseEnumerator<T>(x, _items)));
+                return _items.Current.Then(x => (IPromiseEnumerator<T>)(new PromiseEnumerator<T>(Factory, x, _items)));
             }
             else
             {
-                return Promise.Factory.StartNew((IPromiseEnumerator<T>)null);
+                return Factory.StartNew((IPromiseEnumerator<T>)null);
             }
+        }
+
+
+        public PromiseFactory Factory
+        {
+            get;
+            private set;
         }
     }
 
@@ -53,22 +62,22 @@ namespace MooPromise.Enumerable
     {
         public static IPromise<IPromiseEnumerator<T>> Create<T>(IPromise<IEnumerable<IPromise<T>>> items)
         {
-            return items.Then(x => (IPromiseEnumerator<T>)(new PromiseEnumerator<T>(x.GetEnumerator())));
+            return items.Then(x => (IPromiseEnumerator<T>)(new PromiseEnumerator<T>(items.Factory, x.GetEnumerator())));
         }
 
         public static IPromise<IPromiseEnumerator<T>> Create<T>(IPromise<IEnumerable<T>> items)
         {
-            return Create(items.Then(x => x.Select(y => Promise.Factory.StartNew(y))));
+            return Create(items.Then(x => x.Select(y => items.Factory.StartNew(y))));
         }
 
-        public static IPromise<IPromiseEnumerator<T>> Create<T>(IEnumerable<IPromise<T>> items)
+        public static IPromise<IPromiseEnumerator<T>> Create<T>(PromiseFactory promiseFactory, IEnumerable<IPromise<T>> items)
         {
-            return Create(Promise.Factory.StartNew(items));
+            return Create(promiseFactory.StartNew(items));
         }
 
-        public static IPromise<IPromiseEnumerator<T>> Create<T>(IEnumerable<T> items)
+        public static IPromise<IPromiseEnumerator<T>> Create<T>(PromiseFactory promiseFactory, IEnumerable<T> items)
         {
-            return Create(Promise.Factory.StartNew(items));
+            return Create(promiseFactory.StartNew(items));
         }
     }
 }

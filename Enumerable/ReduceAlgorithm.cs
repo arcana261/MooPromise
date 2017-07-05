@@ -13,7 +13,7 @@ namespace MooPromise.Enumerable
             {
                 if (newItems == null)
                 {
-                    return Promise.Factory.StartNew(seed);
+                    return items.Factory.StartNew(seed);
                 }
                 else
                 {
@@ -29,7 +29,7 @@ namespace MooPromise.Enumerable
 
         public static IPromise<E> Reduce<T, E>(IPromiseEnumerator<T> items, Func<E, T, int, E> fn, E seed)
         {
-            return Reduce(items, (prev, current, index) => Promise.Factory.StartNew(fn(prev, current, index)), seed);
+            return Reduce(items, (prev, current, index) => items.Factory.StartNew(fn(prev, current, index)), seed);
         }
 
         public static IPromise<E> Reduce<T, E>(IPromiseEnumerator<T> items, Func<E, T, IPromise<E>> fn, E seed)
