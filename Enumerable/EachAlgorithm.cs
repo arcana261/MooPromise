@@ -9,7 +9,7 @@ namespace MooPromise.Enumerable
     {
         public static IPromise<IPromiseEnumerator<T>> Each<T>(IPromiseEnumerator<T> items, Func<T, int, IPromise> action)
         {
-            return ReduceAlgorithm.Reduce(items, (prev, current, index) => action(current, index).Then(() => items), items);
+            return ReduceAlgorithm.Reduce(items, (prev, current, index) => action(current, index).Immediately.Then(() => items), items);
         }
 
         public static IPromise<IPromiseEnumerator<T>> Each<T>(IPromiseEnumerator<T> items, Action<T, int> action)
