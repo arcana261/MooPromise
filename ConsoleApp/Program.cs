@@ -16,8 +16,14 @@ namespace ConsoleApp
 
             var arr = new int[] { 1, 2, 3, 4, 2, 4, 3, 5 };
 
-            arr.Promesify().Distinct().Each(x => Console.WriteLine(x)).Then(() => Console.WriteLine("over!"));
+            //arr.Promesify().Distinct().Each(x => Console.WriteLine(x)).Then(() => Console.WriteLine("over!"));
 
+            arr.Promesify().GroupBy(x => x % 2).Each(x =>
+            {
+                Console.WriteLine("- group: " + x.Key);
+
+                return x.Each(y => Console.WriteLine("group[" + x.Key + "] value = " + y)).Then(() => Console.WriteLine("------------"));
+            }).Then(() => Console.WriteLine("done!"));
 
             ManualResetEventSlim exit = new ManualResetEventSlim(false);
             //Promise.SetDefaultFactory(PromiseBackend.MooThreadPool);

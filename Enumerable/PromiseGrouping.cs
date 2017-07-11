@@ -10,7 +10,7 @@ namespace MooPromise.Enumerable
         public PromiseGrouping(TKey key, IPromiseEnumerator<Tuple<TKey, TValue>> items, IEqualityComparer<TKey> comparer)
             : base(items.Factory.Value(SelectEnumerator.Create(WhereEnumerator.Create(items, item => comparer.Equals(key, item.Item1)), item => item.Item2)))
         {
-
+            this.Key = key;
         }
 
         public TKey Key

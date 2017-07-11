@@ -9,15 +9,19 @@ namespace MooPromise.Enumerable
     {
         private IPromiseEnumerator<T> _items;
         private HashSet<T> _hash;
+        private IList<Tuple<T, IPromiseEnumerator<T>>> _itemCache;
+        private int _index;
         
-        public DistinctEnumerator(IPromiseEnumerator<T> items, HashSet<T> hash)
+        public DistinctEnumerator(IPromiseEnumerator<T> items, HashSet<T> hash, IList<Tuple<T, IPromiseEnumerator<T>>> itemCache, int index)
         {
             _items = items;
             _hash = hash;
+            _itemCache = itemCache;
+            _index = index;
         }
 
         public DistinctEnumerator(IPromiseEnumerator<T> items, IEqualityComparer<T> comparer)
-            : this(items, new HashSet<T>(comparer))
+            : this(items, new HashSet<T>(comparer), new List<Tuple<T, IPromiseEnumerator<T>>>(), 0)
         {
             
         }
@@ -26,7 +30,14 @@ namespace MooPromise.Enumerable
         {
             get
             {
-                return _items.Current;
+                int at = _index - 1;
+
+                if (at < 0 || at >= _itemCache.Count)
+                {
+                    throw new NullReferenceException();
+                }
+
+                return _itemCache[at].Item1;
             }
         }
 
@@ -38,24 +49,42 @@ namespace MooPromise.Enumerable
             }
         }
 
-        public IPromise<IPromiseEnumerator<T>> MoveNext()
+        private IPromise<IPromiseEnumerator<T>> FindNext(IPromiseEnumerator<T> items)
         {
-            return _items.MoveNext().Then(result =>
+            return items.MoveNext().Then(result =>
             {
                 if (result == null)
                 {
                     return null;
                 }
 
-                var ret = (IPromiseEnumerator<T>)(new DistinctEnumerator<T>(result, _hash));
-
                 if (_hash.Contains(result.Current))
                 {
-                    return ret.MoveNext();
+                    return FindNext(result);
+                }
+
+                return Factory.Value(result);
+            });
+        }
+
+        public IPromise<IPromiseEnumerator<T>> MoveNext()
+        {
+            if (_index < _itemCache.Count)
+            {
+                return Factory.Value((IPromiseEnumerator<T>)(new DistinctEnumerator<T>(_itemCache[_index].Item2, _hash, _itemCache, _index + 1)));
+            }
+
+            return FindNext(_items).Then(result =>
+            {
+                if (result == null)
+                {
+                    return null;
                 }
 
                 _hash.Add(result.Current);
-                return this.Factory.Value(ret);
+                _itemCache.Add(new Tuple<T, IPromiseEnumerator<T>>(result.Current, result));
+
+                return (IPromiseEnumerator<T>)(new DistinctEnumerator<T>(result, _hash, _itemCache, _index + 1));
             });
         }
     }
