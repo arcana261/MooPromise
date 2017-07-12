@@ -53,7 +53,7 @@ namespace MooPromise.Enumerable
 
                 return _predicate(next.Current, _index).Then(newValue =>
                 {
-                    return (IPromiseEnumerator<E>)(new SelectEnumerator<T, E>(_index + 1, newValue, _items, _predicate));
+                    return (IPromiseEnumerator<E>)(new SelectEnumerator<T, E>(_index + 1, newValue, next, _predicate));
                 });
             });
         }

@@ -14,26 +14,16 @@ namespace ConsoleApp
         {
             Promise.DefaultFactory = PromiseBackend.MooThreadPool;
 
-            Promise.Enumerable(Promise.Factory.StartNew(() => (new int[] { 1, 2, 3 })))
-                .Where(x =>
-                {
-                    if (x == 3)
-                    {
-                        throw new InvalidOperationException();
-                    }
+            var arr = new int[] { 1, 2, 3, 4, 2, 4, 3, 5 };
 
-                    return x % 2 == 1;
-                })
-                .Catch(err =>
-                {
-                    Console.WriteLine(err);
-                })
-                .Select(x => x * 2)
-                .Each(x =>
-                {
-                    Console.WriteLine(x);
-                })
-                ;
+            //arr.Promesify().Distinct().Each(x => Console.WriteLine(x)).Then(() => Console.WriteLine("over!"));
+
+            arr.Promesify().GroupBy(x => x % 2).Each(x =>
+            {
+                Console.WriteLine("- group: " + x.Key);
+
+                return x.Each(y => Console.WriteLine("group[" + x.Key + "] value = " + y)).Then(() => Console.WriteLine("------------"));
+            }).Then(() => Console.WriteLine("done!"));
 
             ManualResetEventSlim exit = new ManualResetEventSlim(false);
             //Promise.SetDefaultFactory(PromiseBackend.MooThreadPool);

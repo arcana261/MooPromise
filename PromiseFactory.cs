@@ -297,6 +297,16 @@ namespace MooPromise
             return StartNew(value);
         }
 
+        public IPromise Value()
+        {
+            return StartNew();
+        }
+
+        public IPromise<T> Value<T>(T value)
+        {
+            return StartNew(value);
+        }
+
         public IPromise StartFailed(Exception error)
         {
             var ret = new ManualPromise(this, _taskFactory);
@@ -313,6 +323,16 @@ namespace MooPromise
             ret.SetFailed(error);
 
             return ret;
+        }
+
+        public IPromise Fail(Exception error)
+        {
+            return StartFailed(error);
+        }
+
+        public IPromise<T> Fail<T>(Exception error)
+        {
+            return StartFailed<T>(error);
         }
 
         public IPromise Sleep(int ms)

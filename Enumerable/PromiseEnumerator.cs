@@ -8,41 +8,55 @@ namespace MooPromise.Enumerable
 {
     internal class PromiseEnumerator<T> : IPromiseEnumerator<T>
     {
-        private NullableResult<T> _current;
         private IEnumerator<IPromise<T>> _items;
+        private int _index;
+        private IList<T> _itemCache;
 
-        public PromiseEnumerator(PromiseFactory factory, T current, IEnumerator<IPromise<T>> items)
+        public PromiseEnumerator(PromiseFactory factory, int index, IList<T> itemCache, IEnumerator<IPromise<T>> items)
         {
             this.Factory = factory;
-            _current = new NullableResult<T>(current);
             _items = items;
+            _index = index;
+            _itemCache = itemCache;
         }
 
         public PromiseEnumerator(PromiseFactory factory, IEnumerator<IPromise<T>> items)
         {
             this.Factory = factory;
-            _current = new NullableResult<T>();
             _items = items;
+            _index = 0;
+            _itemCache = new List<T>();
         }
 
         public T Current
         {
             get
             {
-                if (!_current.HasResult)
+                int at = _index - 1;
+
+                if (at < 0 || at >= _itemCache.Count)
                 {
                     throw new NullReferenceException();
                 }
 
-                return _current.Result;
+                return _itemCache[at];
             }
         }
 
         public IPromise<IPromiseEnumerator<T>> MoveNext()
         {
+            if (_index < _itemCache.Count)
+            {
+                return Factory.Value((IPromiseEnumerator<T>)(new PromiseEnumerator<T>(Factory, _index + 1, _itemCache, _items)));
+            }
+
             if (_items.MoveNext())
             {
-                return _items.Current.Then(x => (IPromiseEnumerator<T>)(new PromiseEnumerator<T>(Factory, x, _items)));
+                return _items.Current.Then(x =>
+                {
+                    _itemCache.Add(x);
+                    return (IPromiseEnumerator<T>)(new PromiseEnumerator<T>(Factory, _index + 1, _itemCache, _items));
+                });
             }
             else
             {

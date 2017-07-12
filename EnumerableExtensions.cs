@@ -13,6 +13,11 @@ namespace MooPromise
             return new PromiseEnumerable<T>(factory, items);
         }
 
+        public static IPromiseEnumerable<T> Promesify<T>(this IEnumerable<T> items)
+        {
+            return items.Promesify(Promise.Factory);
+        }
+
         public static IPromise JoinParallel(this IEnumerable<IPromise> items)
         {
             return Promise.JoinParallel(items);
