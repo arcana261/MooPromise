@@ -202,25 +202,21 @@ namespace MooPromise.Backend
 
         private void Dispose(bool disposing)
         {
-            if (_syncRoot != null)
+            if (disposing)
             {
                 lock (_syncRoot)
                 {
-                    if (!_disposed)
+                    foreach (var runner in _runners)
                     {
-                        _disposed = true;
-
-                        while (_runners.Any(x => x.IsBusy))
-                        {
-                            Thread.Sleep(1);
-                        }
-
-                        foreach (var runner in _runners)
-                        {
-                            runner.Dispose();
-                        }
+                        runner.Dispose();
                     }
+
+                    _disposed = true;
                 }
+            }
+            else
+            {
+                _disposed = true;
             }
         }
 

@@ -59,7 +59,14 @@ namespace MooPromise.ThreadPool
             if (!_disposed)
             {
                 _disposed = true;
-                _threadPool.Dispose();
+
+                if (disposing)
+                {
+                    if (_threadPool != null)
+                    {
+                        _threadPool.Dispose();
+                    }
+                }
             }
         }
 

@@ -115,7 +115,7 @@ namespace MooPromise.Backend.Moo
                         }
                         else
                         {
-                            _context.TaskAddedSignal.WaitOne();
+                            _context.TaskAddedSignal.WaitOne(1000);
                         }
                     }
                     else
@@ -149,26 +149,34 @@ namespace MooPromise.Backend.Moo
 
         private void Dispose(bool disposing)
         {
-            bool join = false;
-
-            lock (_syncRoot)
+            if (disposing)
             {
-                if (!_disposed)
-                {
-                    bool isInside = IsInsideRunnerThread();
-                    _disposed = true;
-                    _shutdown = true;
+                bool join = false;
 
-                    if (!isInside)
+                lock (_syncRoot)
+                {
+                    if (!_disposed)
                     {
-                        join = true;
+                        bool isInside = IsInsideRunnerThread();
+                        _disposed = true;
+                        _shutdown = true;
+
+                        if (!isInside)
+                        {
+                            join = true;
+                        }
                     }
                 }
-            }
 
-            if (join)
+                if (join)
+                {
+                    //_thread.Join();
+                }
+            }
+            else
             {
-                //_thread.Join();
+                _disposed = true;
+                _shutdown = true;
             }
         }
     }

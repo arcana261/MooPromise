@@ -275,13 +275,14 @@ namespace MooPromise.TaskRunner
 
         private void Dispose(bool disposing)
         {
-            lock (_threadPool)
+            if (!_disposed)
             {
-                if (!_disposed)
+                if (disposing)
                 {
                     _threadPool.Dispose();
-                    _disposed = true;
                 }
+
+                _disposed = true;
             }
         }
 

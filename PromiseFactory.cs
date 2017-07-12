@@ -557,11 +557,12 @@ namespace MooPromise
 
         private void Dispose(bool disposing)
         {
-            lock (this)
+            if (!_disposed)
             {
-                if (!_disposed)
+                _disposed = true;
+
+                if (disposing)
                 {
-                    _disposed = true;
                     if (_taskFactory != null)
                     {
                         _taskFactory.Dispose();

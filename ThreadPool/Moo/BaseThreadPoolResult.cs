@@ -91,7 +91,10 @@ namespace MooPromise.ThreadPool.Moo
                         }
                         catch (Exception e)
                         {
-                            Environment.FailFast("Error while calling completed handlers", e);
+                            if (!(e is ObjectDisposedException))
+                            {
+                                Environment.FailFast("Error while calling completed handlers", e);
+                            }
                         }
 
                         _completedHandlers = null;
@@ -112,7 +115,10 @@ namespace MooPromise.ThreadPool.Moo
                     }
                     catch (Exception e)
                     {
-                        Environment.FailFast("Error while calling completed handlers", e);
+                        if (!(e is ObjectDisposedException))
+                        {
+                            Environment.FailFast("Error while calling completed handlers", e);
+                        }
                     }
                 }
                 else
@@ -152,7 +158,10 @@ namespace MooPromise.ThreadPool.Moo
                         }
                         catch (Exception e)
                         {
-                            Environment.FailFast("Error while calling failed handlers", e);
+                            if (!(e is ObjectDisposedException))
+                            {
+                                Environment.FailFast("Error while calling failed handlers", e);
+                            }
                         }
 
                         _failedHandlers = null;
