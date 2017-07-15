@@ -11,7 +11,7 @@ namespace MooPromise.TaskRunner
     internal class TaskFactory : ITaskFactory
     {
         private IThreadPool _threadPool;
-        private bool _disposed;
+        private volatile bool _disposed;
 
         public TaskFactory(IThreadPool threadPool)
         {
@@ -335,6 +335,14 @@ namespace MooPromise.TaskRunner
             }));
 
             return ret;
+        }
+
+        public bool IsDisposed
+        {
+            get
+            {
+                return _disposed;
+            }
         }
     }
 }

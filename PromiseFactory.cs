@@ -24,6 +24,14 @@ namespace MooPromise
             _taskFactory = new TaskFactory(backend);
         }
 
+        public bool IsDisposed
+        {
+            get
+            {
+                return _disposed;
+            }
+        }
+
         internal static PromiseBackend DefaultBackend
         {
             get

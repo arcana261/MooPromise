@@ -24,5 +24,6 @@ namespace MooPromise.TaskRunner
         ITaskResult Begin(Func<ITaskResult> action, int priority);
         ITaskResult BeginImmediately(Func<ITaskResult> action);
         IThreadPool ThreadPool { get; }
+        bool IsDisposed { get; }
     }
 }

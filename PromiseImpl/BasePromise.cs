@@ -156,11 +156,17 @@ namespace MooPromise.PromiseImpl
 
         public void Join()
         {
-            AsyncWaitHandle.WaitOne();
+            while (!AsyncWaitHandle.WaitOne(500))
+            {
+                if (TaskFactory.IsDisposed)
+                {
+                    throw new OperationCanceledException();
+                }
+            }
 
             if (State == AsyncState.Failed)
             {
-                throw new InvalidOperationException("Join failed on operation", Error);
+                throw Error;
             }
         }
     }
@@ -359,7 +365,13 @@ namespace MooPromise.PromiseImpl
 
         public T Join()
         {
-            AsyncWaitHandle.WaitOne();
+            while (!AsyncWaitHandle.WaitOne(500))
+            {
+                if (TaskFactory.IsDisposed)
+                {
+                    throw new OperationCanceledException();
+                }
+            }
 
             if (State == AsyncState.Failed)
             {
