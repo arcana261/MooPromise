@@ -1020,13 +1020,7 @@ namespace MooPromise.Enumerable
 
         public IPromiseEnumerable<IPromiseGrouping<TKey, TValue>> GroupBy<TKey, TValue>(Func<T, int, IPromise<TKey>> key, Func<T, int, IPromise<TValue>> value, IEqualityComparer<TKey> comparer)
         {
-            return new PromiseEnumerable<IPromiseGrouping<TKey, TValue>>(_items.Then(list =>
-            {
-                var tuples = SelectEnumerator.Create(list, (item, index) => key(item, index).Then(k => value(item, index).Then(v => Tuple.Create(k, v))));
-                var keys = DistinctEnumerator.Create(SelectEnumerator.Create(tuples, x => x.Item1));
-
-                return SelectEnumerator.Create(keys, k => (IPromiseGrouping<TKey, TValue>)(new PromiseGrouping<T, TKey, TValue>(k, tuples, comparer)));
-            }));
+            return new PromiseEnumerable<IPromiseGrouping<TKey, TValue>>(_items.Then(list => GroupByAlgorithm.GroupBy(list, key, value, comparer)));
         }
 
         public IPromiseEnumerable<IPromiseGrouping<TKey, TValue>> GroupBy<TKey, TValue>(Func<T, int, IPromise<TKey>> key, Func<T, int, TValue> value, IEqualityComparer<TKey> comparer)
@@ -1222,6 +1216,1141 @@ namespace MooPromise.Enumerable
         public IPromiseEnumerable<IPromiseGrouping<TKey, T>> GroupBy<TKey>(Func<T, TKey> key)
         {
             return GroupBy(key, x => x);
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, TKey> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, TKey> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, TKey> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, TKey> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, int, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, int, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, TKey> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, TKey> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, TKey> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, TKey> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, int, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, int, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, value, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, int, IPromise<TKey>> key, Func<TKey, IPromiseEnumerable<T>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, IPromise<TKey>> key, Func<TKey, IPromiseEnumerable<T>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, int, TKey> key, Func<TKey, IPromiseEnumerable<T>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, TKey> key, Func<TKey, IPromiseEnumerable<T>, IPromise<E>> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, int, IPromise<TKey>> key, Func<TKey, IPromiseEnumerable<T>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, IPromise<TKey>> key, Func<TKey, IPromiseEnumerable<T>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, int, TKey> key, Func<TKey, IPromiseEnumerable<T>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, TKey> key, Func<TKey, IPromiseEnumerable<T>, E> result, IEqualityComparer<TKey> comparer)
+        {
+            return GroupBy(key, comparer).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, TKey> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, TKey> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, TKey> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, TKey> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, int, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, int, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, IPromise<E>> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, TKey> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, TKey> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, TKey> key, Func<T, int, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, TKey> key, Func<T, IPromise<TValue>> value, Func<TKey, IPromiseEnumerable<TValue>, E> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, int, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, E> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, int, IPromise<TKey>> key, Func<T, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, E> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, int, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, E> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, TValue, E>(Func<T, IPromise<TKey>> key, Func<T, TValue> value, Func<TKey, IPromiseEnumerable<TValue>, E> result)
+        {
+            return GroupBy(key, value).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, int, IPromise<TKey>> key, Func<TKey, IPromiseEnumerable<T>, IPromise<E>> result)
+        {
+            return GroupBy(key).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, IPromise<TKey>> key, Func<TKey, IPromiseEnumerable<T>, IPromise<E>> result)
+        {
+            return GroupBy(key).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, int, TKey> key, Func<TKey, IPromiseEnumerable<T>, IPromise<E>> result)
+        {
+            return GroupBy(key).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, TKey> key, Func<TKey, IPromiseEnumerable<T>, IPromise<E>> result)
+        {
+            return GroupBy(key).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, int, IPromise<TKey>> key, Func<TKey, IPromiseEnumerable<T>, E> result)
+        {
+            return GroupBy(key).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, IPromise<TKey>> key, Func<TKey, IPromiseEnumerable<T>, E> result)
+        {
+            return GroupBy(key).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, int, TKey> key, Func<TKey, IPromiseEnumerable<T>, E> result)
+        {
+            return GroupBy(key).Select(g => result(g.Key, g));
+        }
+
+        public IPromiseEnumerable<E> GroupBy<TKey, E>(Func<T, TKey> key, Func<TKey, IPromiseEnumerable<T>, E> result)
+        {
+            return GroupBy(key).Select(g => result(g.Key, g));
+        }
+
+        public IPromise<int> Sum(Func<T, int, IPromise<int?>> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<int> Sum(Func<T, int, int?> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<int> Sum(Func<T, IPromise<int?>> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<int> Sum(Func<T, int?> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<long> Sum(Func<T, int, IPromise<long?>> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<long> Sum(Func<T, int, long?> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<long> Sum(Func<T, IPromise<long?>> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<long> Sum(Func<T, long?> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<float> Sum(Func<T, int, IPromise<float?>> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<float> Sum(Func<T, int, float?> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<float> Sum(Func<T, IPromise<float?>> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<float> Sum(Func<T, float?> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<double> Sum(Func<T, int, IPromise<double?>> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<double> Sum(Func<T, int, double?> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<double> Sum(Func<T, IPromise<double?>> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<double> Sum(Func<T, double?> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<decimal> Sum(Func<T, int, IPromise<decimal?>> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<decimal> Sum(Func<T, int, decimal?> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<decimal> Sum(Func<T, IPromise<decimal?>> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<decimal> Sum(Func<T, decimal?> action)
+        {
+            return Select(action).Sum();
+        }
+
+        public IPromise<double> Average(Func<T, int, IPromise<int?>> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, int, int?> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, IPromise<int?>> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, int?> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, int, IPromise<long?>> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, int, long?> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, IPromise<long?>> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, long?> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, int, IPromise<float?>> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, int, float?> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, IPromise<float?>> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, float?> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, int, IPromise<double?>> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, int, double?> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, IPromise<double?>> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, double?> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, int, IPromise<decimal?>> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, int, decimal?> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, IPromise<decimal?>> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<double> Average(Func<T, decimal?> action)
+        {
+            return Select(action).Average();
+        }
+
+        public IPromise<int> Min(Func<T, int, IPromise<int>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<int> Min(Func<T, int, int> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<int> Min(Func<T, IPromise<int>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<int> Min(Func<T, int> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<int?> Min(Func<T, int, IPromise<int?>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<int?> Min(Func<T, int, int?> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<int?> Min(Func<T, IPromise<int?>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<int?> Min(Func<T, int?> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<int> Max(Func<T, int, IPromise<int>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<int> Max(Func<T, int, int> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<int> Max(Func<T, IPromise<int>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<int> Max(Func<T, int> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<int?> Max(Func<T, int, IPromise<int?>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<int?> Max(Func<T, int, int?> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<int?> Max(Func<T, IPromise<int?>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<int?> Max(Func<T, int?> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<long> Min(Func<T, int, IPromise<long>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<long> Min(Func<T, int, long> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<long> Min(Func<T, IPromise<long>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<long> Min(Func<T, long> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<long?> Min(Func<T, int, IPromise<long?>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<long?> Min(Func<T, int, long?> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<long?> Min(Func<T, IPromise<long?>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<long?> Min(Func<T, long?> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<long> Max(Func<T, int, IPromise<long>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<long> Max(Func<T, int, long> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<long> Max(Func<T, IPromise<long>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<long> Max(Func<T, long> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<long?> Max(Func<T, int, IPromise<long?>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<long?> Max(Func<T, int, long?> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<long?> Max(Func<T, IPromise<long?>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<long?> Max(Func<T, long?> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<decimal> Min(Func<T, int, IPromise<decimal>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<decimal> Min(Func<T, int, decimal> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<decimal> Min(Func<T, IPromise<decimal>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<decimal> Min(Func<T, decimal> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<decimal?> Min(Func<T, int, IPromise<decimal?>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<decimal?> Min(Func<T, int, decimal?> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<decimal?> Min(Func<T, IPromise<decimal?>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<decimal?> Min(Func<T, decimal?> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<decimal> Max(Func<T, int, IPromise<decimal>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<decimal> Max(Func<T, int, decimal> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<decimal> Max(Func<T, IPromise<decimal>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<decimal> Max(Func<T, decimal> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<decimal?> Max(Func<T, int, IPromise<decimal?>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<decimal?> Max(Func<T, int, decimal?> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<decimal?> Max(Func<T, IPromise<decimal?>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<decimal?> Max(Func<T, decimal?> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<float> Min(Func<T, int, IPromise<float>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<float> Min(Func<T, int, float> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<float> Min(Func<T, IPromise<float>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<float> Min(Func<T, float> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<float?> Min(Func<T, int, IPromise<float?>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<float?> Min(Func<T, int, float?> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<float?> Min(Func<T, IPromise<float?>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<float?> Min(Func<T, float?> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<float> Max(Func<T, int, IPromise<float>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<float> Max(Func<T, int, float> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<float> Max(Func<T, IPromise<float>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<float> Max(Func<T, float> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<float?> Max(Func<T, int, IPromise<float?>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<float?> Max(Func<T, int, float?> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<float?> Max(Func<T, IPromise<float?>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<float?> Max(Func<T, float?> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<double> Min(Func<T, int, IPromise<double>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<double> Min(Func<T, int, double> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<double> Min(Func<T, IPromise<double>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<double> Min(Func<T, double> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<double?> Min(Func<T, int, IPromise<double?>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<double?> Min(Func<T, int, double?> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<double?> Min(Func<T, IPromise<double?>> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<double?> Min(Func<T, double?> action)
+        {
+            return Select(action).Min();
+        }
+
+        public IPromise<double> Max(Func<T, int, IPromise<double>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<double> Max(Func<T, int, double> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<double> Max(Func<T, IPromise<double>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<double> Max(Func<T, double> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<double?> Max(Func<T, int, IPromise<double?>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<double?> Max(Func<T, int, double?> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<double?> Max(Func<T, IPromise<double?>> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromise<double?> Max(Func<T, double?> action)
+        {
+            return Select(action).Max();
+        }
+
+        public IPromiseEnumerable<T> OrderBy<Key>(Func<T, int, IPromise<Key>> key, IComparer<Key> comparer)
+        {
+            return new PromiseEnumerable<T>(_items.Then(list => OrderByAlgorithm.OrderBy(list, key, comparer)));
+        }
+
+        public IPromiseEnumerable<T> OrderBy<Key>(Func<T, int, Key> key, IComparer<Key> comparer)
+        {
+            return OrderBy((x, i) => Factory.Value(key(x, i)), comparer);
+        }
+
+        public IPromiseEnumerable<T> OrderBy<Key>(Func<T, IPromise<Key>> key, IComparer<Key> comparer)
+        {
+            return OrderBy((x, i) => key(x), comparer);
+        }
+
+        public IPromiseEnumerable<T> OrderBy<Key>(Func<T, Key> key, IComparer<Key> comparer)
+        {
+            return OrderBy((x, i) => key(x), comparer);
+        }
+
+        public IPromiseEnumerable<T> OrderBy<Key>(Func<T, int, IPromise<Key>> key)
+        {
+            return OrderBy(key, Comparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<T> OrderBy<Key>(Func<T, int, Key> key)
+        {
+            return OrderBy(key, Comparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<T> OrderBy<Key>(Func<T, IPromise<Key>> key)
+        {
+            return OrderBy(key, Comparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<T> OrderBy<Key>(Func<T, Key> key)
+        {
+            return OrderBy(key, Comparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<T> OrderBy(IComparer<T> comparer)
+        {
+            return OrderBy(x => x, comparer);
+        }
+
+        public IPromiseEnumerable<T> OrderBy()
+        {
+            return OrderBy(x => x);
+        }
+
+        public IPromise<E> Aggregate<E>(E seed, Func<E, T, int, IPromise<E>> action)
+        {
+            return Aggregate(action, seed);
+        }
+
+        public IPromise<E> Aggregate<E>(E seed, Func<E, T, int, E> action)
+        {
+            return Aggregate(action, seed);
+        }
+
+        public IPromise<E> Aggregate<E>(E seed, Func<E, T, IPromise<E>> action)
+        {
+            return Aggregate(action, seed);
+        }
+
+        public IPromise<E> Aggregate<E>(E seed, Func<E, T, E> action)
+        {
+            return Aggregate(action, seed);
+        }
+
+        public IPromise<ISet<T>> ToSet(IEqualityComparer<T> comparer)
+        {
+            return _items.Then(list => ToSetAlgorithm.ToSet(list, comparer));
+        }
+
+        public IPromise<ISet<T>> ToSet()
+        {
+            return _items.Then(list => ToSetAlgorithm.ToSet(list));
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromiseEnumerable<T> items, IEqualityComparer<T> comparer)
+        {
+            if (!(items is PromiseEnumerable<T>))
+            {
+                throw new InvalidOperationException();
+            }
+
+            return new PromiseEnumerable<T>(_items.Then(left => ((PromiseEnumerable<T>)items)._items.Then(right => IntersectAlgorithm.Intersect(left, right, comparer))));
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromiseEnumerable<T> items)
+        {
+            return Intersect(items, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Intersect(IEnumerable<T> other)
+        {
+            return Intersect(new PromiseEnumerable<T>(this.Factory, other));
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<IEnumerable<T>> other)
+        {
+            return Intersect(new PromiseEnumerable<T>(other));
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<ICollection<T>> other)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>());
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<IList<T>> other)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>());
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<ISet<T>> other)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>());
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<T[]> other)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>());
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<List<T>> other)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>());
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<HashSet<T>> other)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>());
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<SortedSet<T>> other)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>());
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<LinkedList<T>> other)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>());
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<Stack<T>> other)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>());
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<Queue<T>> other)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>());
+        }
+
+        public IPromiseEnumerable<T> Intersect(IEnumerable<T> other, IEqualityComparer<T> comparer)
+        {
+            return Intersect(new PromiseEnumerable<T>(this.Factory, other), comparer);
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<IEnumerable<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Intersect(new PromiseEnumerable<T>(other), comparer);
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<ICollection<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<IList<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<ISet<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<T[]> other, IEqualityComparer<T> comparer)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<List<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<HashSet<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<SortedSet<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<LinkedList<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<Stack<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Intersect(IPromise<Queue<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Intersect(other.Cast<IEnumerable<T>>(), comparer);
         }
 
         public PromiseFactory Factory

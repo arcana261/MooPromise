@@ -106,5 +106,125 @@ namespace MooPromise
         {
             return items.Sum().Then(sum => items.Count().Then(count => ((double)sum) / ((double)count)));
         }
+
+        public static IPromise<int> Min(this IPromiseEnumerable<int> items)
+        {
+            return items.First().Then(first => items.Aggregate((prev, current) => Math.Min(prev, current), first));
+        }
+
+        public static IPromise<long> Min(this IPromiseEnumerable<long> items)
+        {
+            return items.First().Then(first => items.Aggregate((prev, current) => Math.Min(prev, current), first));
+        }
+
+        public static IPromise<float> Min(this IPromiseEnumerable<float> items)
+        {
+            return items.First().Then(first => items.Aggregate((prev, current) => Math.Min(prev, current), first));
+        }
+
+        public static IPromise<double> Min(this IPromiseEnumerable<double> items)
+        {
+            return items.First().Then(first => items.Aggregate((prev, current) => Math.Min(prev, current), first));
+        }
+
+        public static IPromise<decimal> Min(this IPromiseEnumerable<decimal> items)
+        {
+            return items.First().Then(first => items.Aggregate((prev, current) => Math.Min(prev, current), first));
+        }
+
+        public static IPromise<int?> Min(this IPromiseEnumerable<int?> items)
+        {
+            var filtered = items.Where(x => x.HasValue).Select(x => x.Value);
+
+            return filtered.Empty().Then(empty => empty ? items.Factory.Value<int?>(null) : filtered.Min().Then(v => ((int?)v)));
+        }
+
+        public static IPromise<long?> Min(this IPromiseEnumerable<long?> items)
+        {
+            var filtered = items.Where(x => x.HasValue).Select(x => x.Value);
+
+            return filtered.Empty().Then(empty => empty ? items.Factory.Value<long?>(null) : filtered.Min().Then(v => ((long?)v)));
+        }
+
+        public static IPromise<float?> Min(this IPromiseEnumerable<float?> items)
+        {
+            var filtered = items.Where(x => x.HasValue).Select(x => x.Value);
+
+            return filtered.Empty().Then(empty => empty ? items.Factory.Value<float?>(null) : filtered.Min().Then(v => ((float?)v)));
+        }
+
+        public static IPromise<double?> Min(this IPromiseEnumerable<double?> items)
+        {
+            var filtered = items.Where(x => x.HasValue).Select(x => x.Value);
+
+            return filtered.Empty().Then(empty => empty ? items.Factory.Value<double?>(null) : filtered.Min().Then(v => ((double?)v)));
+        }
+
+        public static IPromise<decimal?> Min(this IPromiseEnumerable<decimal?> items)
+        {
+            var filtered = items.Where(x => x.HasValue).Select(x => x.Value);
+
+            return filtered.Empty().Then(empty => empty ? items.Factory.Value<decimal?>(null) : filtered.Min().Then(v => ((decimal?)v)));
+        }
+
+        public static IPromise<int> Max(this IPromiseEnumerable<int> items)
+        {
+            return items.First().Then(first => items.Aggregate((prev, current) => Math.Max(prev, current), first));
+        }
+
+        public static IPromise<long> Max(this IPromiseEnumerable<long> items)
+        {
+            return items.First().Then(first => items.Aggregate((prev, current) => Math.Max(prev, current), first));
+        }
+
+        public static IPromise<float> Max(this IPromiseEnumerable<float> items)
+        {
+            return items.First().Then(first => items.Aggregate((prev, current) => Math.Max(prev, current), first));
+        }
+
+        public static IPromise<double> Max(this IPromiseEnumerable<double> items)
+        {
+            return items.First().Then(first => items.Aggregate((prev, current) => Math.Max(prev, current), first));
+        }
+
+        public static IPromise<decimal> Max(this IPromiseEnumerable<decimal> items)
+        {
+            return items.First().Then(first => items.Aggregate((prev, current) => Math.Max(prev, current), first));
+        }
+
+        public static IPromise<int?> Max(this IPromiseEnumerable<int?> items)
+        {
+            var filtered = items.Where(x => x.HasValue).Select(x => x.Value);
+
+            return filtered.Empty().Then(empty => empty ? items.Factory.Value<int?>(null) : filtered.Max().Then(v => ((int?)v)));
+        }
+
+        public static IPromise<long?> Max(this IPromiseEnumerable<long?> items)
+        {
+            var filtered = items.Where(x => x.HasValue).Select(x => x.Value);
+
+            return filtered.Empty().Then(empty => empty ? items.Factory.Value<long?>(null) : filtered.Max().Then(v => ((long?)v)));
+        }
+
+        public static IPromise<float?> Max(this IPromiseEnumerable<float?> items)
+        {
+            var filtered = items.Where(x => x.HasValue).Select(x => x.Value);
+
+            return filtered.Empty().Then(empty => empty ? items.Factory.Value<float?>(null) : filtered.Max().Then(v => ((float?)v)));
+        }
+
+        public static IPromise<double?> Max(this IPromiseEnumerable<double?> items)
+        {
+            var filtered = items.Where(x => x.HasValue).Select(x => x.Value);
+
+            return filtered.Empty().Then(empty => empty ? items.Factory.Value<double?>(null) : filtered.Max().Then(v => ((double?)v)));
+        }
+
+        public static IPromise<decimal?> Max(this IPromiseEnumerable<decimal?> items)
+        {
+            var filtered = items.Where(x => x.HasValue).Select(x => x.Value);
+
+            return filtered.Empty().Then(empty => empty ? items.Factory.Value<decimal?>(null) : filtered.Max().Then(v => ((decimal?)v)));
+        }
     }
 }

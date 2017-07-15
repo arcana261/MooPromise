@@ -52,11 +52,15 @@
     <Compile Include="Enumerable\DistinctEnumerator.cs" />
     <Compile Include="Enumerable\EachAlgorithm.cs" />
     <Compile Include="Enumerable\EmptyAlgorithm.cs" />
+    <Compile Include="Enumerable\EnumeratorExtensions.cs" />
     <Compile Include="Enumerable\FirstAlgorithm.cs" />
     <Compile Include="Enumerable\FirstOrDefaultAlgorithm.cs" />
+    <Compile Include="Enumerable\GroupByAlgorithm.cs" />
+    <Compile Include="Enumerable\IntersectAlgorithm.cs" />
     <Compile Include="Enumerable\LastAlgorithm.cs" />
     <Compile Include="Enumerable\LastOrDefaultAlgoritm.cs" />
     <Compile Include="Enumerable\LongCountAlgorithm.cs" />
+    <Compile Include="Enumerable\OrderByAlgorithm.cs" />
     <Compile Include="Enumerable\PromiseEnumerable.cs" />
     <Compile Include="Enumerable\PromiseEnumerator.cs" />
     <Compile Include="Enumerable\PromiseGrouping.cs" />
@@ -68,6 +72,7 @@
     <Compile Include="Enumerable\SkipWhileEnumerator.cs" />
     <Compile Include="Enumerable\TakeWhileEnumerator.cs" />
     <Compile Include="Enumerable\ToListAlgorithm.cs" />
+    <Compile Include="Enumerable\ToSetAlgorithm.cs" />
     <Compile Include="Enumerable\UnionAlgorithm.cs" />
     <Compile Include="Enumerable\WhereEnumerator.cs" />
     <Compile Include="ExceptionHandling\ExceptionUtility.cs" />
