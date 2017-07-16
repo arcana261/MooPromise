@@ -169,6 +169,36 @@ namespace MooPromise.PromiseImpl
                 throw Error;
             }
         }
+
+
+        public bool Join(int waitMs)
+        {
+            int toWait = 0;
+            bool lastResult = false;
+
+            if (waitMs < 0)
+            {
+                Join();
+                return true;
+            }
+
+            while (waitMs > 0 && !(lastResult = AsyncWaitHandle.WaitOne(toWait = Math.Min(waitMs, 500))))
+            {
+                if (TaskFactory.IsDisposed)
+                {
+                    throw new OperationCanceledException();
+                }
+
+                waitMs -= toWait;
+            }
+
+            if (State == AsyncState.Failed)
+            {
+                throw Error;
+            }
+
+            return lastResult;
+        }
     }
 
     internal abstract class BasePromise<T> : IPromise<T>
@@ -379,6 +409,44 @@ namespace MooPromise.PromiseImpl
             }
 
             return Result;
+        }
+
+        public bool Join(int waitMs, out T value)
+        {
+            if (waitMs < 0)
+            {
+                value = Join();
+                return true;
+            }
+
+            int toWait = 0;
+            bool lastResult = false;
+
+            while (waitMs > 0 && !(lastResult = AsyncWaitHandle.WaitOne(toWait = Math.Min(waitMs, 500))))
+            {
+                if (TaskFactory.IsDisposed)
+                {
+                    throw new OperationCanceledException();
+                }
+
+                waitMs -= toWait;
+            }
+
+            if (State == AsyncState.Failed)
+            {
+                throw Error;
+            }
+
+            if (lastResult)
+            {
+                value = Result;
+            }
+            else
+            {
+                value = default(T);
+            }
+
+            return lastResult;
         }
     }
 }

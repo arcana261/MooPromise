@@ -439,6 +439,12 @@ namespace MooPromise
         {
             _promise.Join();
         }
+
+
+        public bool Join(int waitMs)
+        {
+            return _promise.Join(waitMs);
+        }
     }
 
     public class Promise<T> : IPromise<T>
@@ -702,6 +708,11 @@ namespace MooPromise
         public T Join()
         {
             return _promise.Join();
+        }
+
+        public bool Join(int waitMs, out T value)
+        {
+            return _promise.Join(waitMs, out value);
         }
     }
 }

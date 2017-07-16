@@ -29,6 +29,7 @@ namespace MooPromise
         IPromise Immediately { get; }
         IPromise Priority(PromisePriority priority);
         void Join();
+        bool Join(int waitMs);
     }
 
     public interface IManualPromise : IPromise
@@ -57,6 +58,7 @@ namespace MooPromise
         IPromise<T> Priority(PromisePriority priority);
         T Result { get; }
         T Join();
+        bool Join(int waitMs, out T value);
     }
 
     public interface IManualPromise<T> : IPromise<T>
