@@ -15,28 +15,10 @@ namespace ConsoleApp
             Promise.DefaultFactory = PromiseBackend.MooThreadPool;
             var exit = new ManualResetEventSlim(false);
 
-            var ctx = Promise.CreateSynchronizationContext();
+            var arr1 = new int[] { 1, 2, 3, 4, 5 };
+            var arr2 = new int[] { 2, 4, 4 };
 
-            ctx.Post(() =>
-            {
-                Console.WriteLine("1");
-                Thread.Sleep(2000);
-
-                return Promise.Factory.StartNew(() =>
-                {
-                    Console.WriteLine("1.5");
-
-                    throw new ArgumentException("hi!");
-                });
-            }).Catch(err =>
-            {
-                Console.WriteLine("error: " + err.Message);
-            });
-
-            ctx.Post(() =>
-            {
-                Console.WriteLine("2");
-            });
+            arr1.Promesify().Intersect(arr2).Each(x => Console.WriteLine(x)).Then(() => Console.WriteLine("done!"));
 
             exit.Wait();
 

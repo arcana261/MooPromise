@@ -49,6 +49,7 @@
     <Compile Include="Enumerable\ConcatEnumerator.cs" />
     <Compile Include="Enumerable\CountAlgorithm.cs" />
     <Compile Include="Enumerable\DefaultIfEmptyAlgorithm.cs" />
+    <Compile Include="Enumerable\DifferenceAlgorithm.cs" />
     <Compile Include="Enumerable\DistinctEnumerator.cs" />
     <Compile Include="Enumerable\EachAlgorithm.cs" />
     <Compile Include="Enumerable\EmptyAlgorithm.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Enumerable\FirstAlgorithm.cs" />
     <Compile Include="Enumerable\FirstOrDefaultAlgorithm.cs" />
     <Compile Include="Enumerable\GroupByAlgorithm.cs" />
+    <Compile Include="Enumerable\GroupJoinAlgorithm.cs" />
     <Compile Include="Enumerable\IntersectAlgorithm.cs" />
     <Compile Include="Enumerable\LastAlgorithm.cs" />
     <Compile Include="Enumerable\LastOrDefaultAlgoritm.cs" />
