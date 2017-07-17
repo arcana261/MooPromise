@@ -12,6 +12,7 @@ namespace MooPromise
     public class PromiseFactory : IDisposable
     {
         private ITaskFactory _taskFactory;
+        private IBackend _backend;
         private bool _disposed;
 
         public PromiseFactory(IBackend backend)
@@ -21,6 +22,7 @@ namespace MooPromise
                 throw new ArgumentNullException("backend");
             }
 
+            _backend = backend;
             _taskFactory = new TaskFactory(backend);
         }
 
@@ -30,6 +32,16 @@ namespace MooPromise
             {
                 return _disposed;
             }
+        }
+
+        public void WaitUntilDisposed()
+        {
+            _backend.WaitUntilDisposed();
+        }
+
+        public bool WaitUntilDisposed(int waitMs)
+        {
+            return _backend.WaitUntilDisposed(waitMs);
         }
 
         internal static PromiseBackend DefaultBackend

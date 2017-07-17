@@ -52,5 +52,15 @@ namespace MooPromise.Backend
             }
         }
 #endif
+
+        public void WaitUntilDisposed()
+        {
+            
+        }
+
+        public bool WaitUntilDisposed(int waitMs)
+        {
+            return true;
+        }
     }
 }

@@ -11,6 +11,10 @@ namespace MooPromise
         void Add(Action action, int priority);
         void AddImmediately(Action action);
         bool IsCurrentThreadManagedByBackend();
+
+        void WaitUntilDisposed();
+        bool WaitUntilDisposed(int waitMs);
+
 #if DEBUG
         IEnumerable<int> ManagedThreadIds { get; }
 #endif

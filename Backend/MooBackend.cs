@@ -14,7 +14,7 @@ namespace MooPromise.Backend
         private object _syncRoot;
         private IList<MooBackendRunner> _runners;
         private MooBackendContext _context;
-        private bool _disposed;
+        private volatile bool _disposed;
 
         public MooBackend(int minThreads, int maxThreads)
         {
@@ -231,6 +231,58 @@ namespace MooPromise.Backend
 
                 return _runners.Any(x => x.IsInsideRunnerThread());
             }
+        }
+
+
+        public void WaitUntilDisposed()
+        {
+            while (!_disposed)
+            {
+                Thread.Sleep(1);
+            }
+
+            foreach (var runner in _runners)
+            {
+                runner.WaitUntilDisposed();
+            }
+        }
+
+        public bool WaitUntilDisposed(int waitMs)
+        {
+            if (waitMs < 0)
+            {
+                WaitUntilDisposed();
+                return true;
+            }
+
+            while (!_disposed && waitMs > 0)
+            {
+                Thread.Sleep(1);
+                waitMs--;
+            }
+
+            if (waitMs < 1)
+            {
+                return false;
+            }
+
+            foreach (var runner in _runners)
+            {
+                if (waitMs < 1)
+                {
+                    return false;
+                }
+
+                int start = Environment.TickCount;
+                if (!runner.WaitUntilDisposed(waitMs))
+                {
+                    return false;
+                }
+
+                waitMs = waitMs - (Environment.TickCount - start);
+            }
+
+            return true;
         }
     }
 }
