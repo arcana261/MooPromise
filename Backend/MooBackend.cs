@@ -117,16 +117,25 @@ namespace MooPromise.Backend
             }
         }
 
-        private MooThreadPoolTask CreateTask(Action action)
+        private MooBackendTask CreateTask(Action action)
         {
-            return new MooThreadPoolTask(() =>
+            return new MooBackendTask(() =>
             {
                 action();
                 ContractThreadsIfNeeded();
             });
         }
 
-        private bool TryImmediately(MooThreadPoolTask task)
+        private MooBackendTask CreateFutureTask(int dueTickCount, Action action)
+        {
+            return new MooBackendFutureTask(dueTickCount, () =>
+            {
+                action();
+                ContractThreadsIfNeeded();
+            });
+        }
+
+        private bool TryImmediately(MooBackendTask task)
         {
             bool canRun = false;
 
@@ -164,8 +173,11 @@ namespace MooPromise.Backend
 
         public void Add(Action action, int priority)
         {
-            var task = CreateTask(action);
+            Add(CreateTask(action), priority);
+        }
 
+        private void Add(MooBackendTask task, int priority)
+        {
             lock (_syncRoot)
             {
                 if (_disposed)
@@ -231,6 +243,16 @@ namespace MooPromise.Backend
 
                 return _runners.Any(x => x.IsInsideRunnerThread());
             }
+        }
+
+        public void AddFuture(int dueTickTime, Action action)
+        {
+            AddFuture(dueTickTime, action, 0);
+        }
+
+        public void AddFuture(int dueTickTime, Action action, int priority)
+        {
+            Add(CreateFutureTask(dueTickTime, action), priority);
         }
     }
 }

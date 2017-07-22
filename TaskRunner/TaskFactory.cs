@@ -337,6 +337,212 @@ namespace MooPromise.TaskRunner
             return ret;
         }
 
+        public ITaskResult CreateFuture(int dueTickTime, Action action)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("TaskFactory");
+            }
+
+            return new TaskResult(_threadPool, _threadPool.CreateFuture(dueTickTime, action));
+        }
+
+        public ITaskResult CreateFuture(int dueTickTime, Func<ITaskResult> action)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("TaskFactory");
+            }
+
+            ManualTaskResult ret = new ManualTaskResult(_threadPool);
+            ret.Start();
+
+            var task = CreateFuture(dueTickTime, () =>
+            {
+                var next = action();
+
+                if (next != null)
+                {
+                    next.Then(x =>
+                    {
+                        if (x.HasResult)
+                        {
+                            ret.SetResult(x.Result);
+                        }
+                        ret.SetCompleted();
+                    }).Catch(error =>
+                    {
+                        ret.SetFailed(error);
+                    });
+                }
+                else
+                {
+                    ret.SetCompleted();
+                }
+            }).Catch(error =>
+            {
+                ret.SetFailed(error);
+            });
+
+            return new BoundTaskResult(task, ret);
+        }
+
+        public ITaskResult CreateFuture(int dueTickTime, Func<object> action)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("TaskFactory");
+            }
+
+            TaskResult ret = null;
+
+            ret = new TaskResult(_threadPool, _threadPool.CreateFuture(dueTickTime, () =>
+            {
+                ret.SetResult(action());
+            }));
+
+            return ret;
+        }
+
+        public ITaskResult CreateFuture(int dueTickTime, Action action, int priority)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("TaskFactory");
+            }
+
+            return new TaskResult(_threadPool, _threadPool.CreateFuture(dueTickTime, action, priority));
+        }
+
+        public ITaskResult CreateFuture(int dueTickTime, Func<ITaskResult> action, int priority)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("TaskFactory");
+            }
+
+            ManualTaskResult ret = new ManualTaskResult(_threadPool);
+            ret.Start();
+
+            var task = CreateFuture(dueTickTime, () =>
+            {
+                var next = action();
+
+                if (next != null)
+                {
+                    next.Then(x =>
+                    {
+                        if (x.HasResult)
+                        {
+                            ret.SetResult(x.Result);
+                        }
+                        ret.SetCompleted();
+                    }).Catch(error =>
+                    {
+                        ret.SetFailed(error);
+                    });
+                }
+                else
+                {
+                    ret.SetCompleted();
+                }
+            }, priority).Catch(error =>
+            {
+                ret.SetFailed(error);
+            });
+
+            return new BoundTaskResult(task, ret);
+        }
+
+        public ITaskResult CreateFuture(int dueTickTime, Func<object> action, int priority)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("TaskFactory");
+            }
+
+            TaskResult ret = null;
+
+            ret = new TaskResult(_threadPool, _threadPool.CreateFuture(dueTickTime, () =>
+            {
+                ret.SetResult(action());
+            }, priority));
+
+            return ret;
+        }
+
+        public ITaskResult BeginFuture(int dueTickTime, Action action)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("TaskFactory");
+            }
+
+            var ret = CreateFuture(dueTickTime, action);
+            ret.Start();
+            return ret;
+        }
+
+        public ITaskResult BeginFuture(int dueTickTime, Func<ITaskResult> action)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("TaskFactory");
+            }
+
+            var ret = CreateFuture(dueTickTime, action);
+            ret.Start();
+            return ret;
+        }
+
+        public ITaskResult BeginFuture(int dueTickTime, Func<object> action)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("TaskFactory");
+            }
+
+            var ret = CreateFuture(dueTickTime, action);
+            ret.Start();
+            return ret;
+        }
+
+        public ITaskResult BeginFuture(int dueTickTime, Action action, int priority)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("TaskFactory");
+            }
+
+            var ret = CreateFuture(dueTickTime, action, priority);
+            ret.Start();
+            return ret;
+        }
+
+        public ITaskResult BeginFuture(int dueTickTime, Func<ITaskResult> action, int priority)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("TaskFactory");
+            }
+
+            var ret = CreateFuture(dueTickTime, action, priority);
+            ret.Start();
+            return ret;
+        }
+
+        public ITaskResult BeginFuture(int dueTickTime, Func<object> action, int priority)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("TaskFactory");
+            }
+
+            var ret = CreateFuture(dueTickTime, action, priority);
+            ret.Start();
+            return ret;
+        }
+
         public bool IsDisposed
         {
             get

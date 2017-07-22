@@ -74,5 +74,31 @@ namespace MooPromise.Backend
         {
             
         }
+
+        public void AddFuture(int dueTickTime, Action action)
+        {
+            int tick = dueTickTime - Environment.TickCount;
+
+            if (tick <= 0)
+            {
+                Add(action);
+            }
+            else
+            {
+                System.Timers.Timer timer = new System.Timers.Timer(tick);
+                timer.AutoReset = false;
+                timer.Elapsed += (sender, args) =>
+                {
+                    AddImmediately(action);
+                };
+
+                timer.Start();
+            }
+        }
+
+        public void AddFuture(int dueTickTime, Action action, int priority)
+        {
+            AddFuture(dueTickTime, action);
+        }
     }
 }

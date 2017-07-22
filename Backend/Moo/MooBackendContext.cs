@@ -12,11 +12,11 @@ namespace MooPromise.Backend.Moo
     {
         public MooBackendContext()
         {
-            Queue = new ConcurrentPriorityQueue<MooThreadPoolTask>();
+            Queue = new ConcurrentPriorityQueue<MooBackendTask>();
             TaskAddedSignal = new AutoResetEvent(false);
         }
 
-        public IPriorityQueue<MooThreadPoolTask> Queue
+        public IPriorityQueue<MooBackendTask> Queue
         {
             get;
             private set;

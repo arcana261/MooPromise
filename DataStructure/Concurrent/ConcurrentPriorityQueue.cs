@@ -137,5 +137,13 @@ namespace MooPromise.DataStructure.Concurrent
                 return _items.TryPop(out value);
             }
         }
+
+        public bool TryPop(out T value, out int priority)
+        {
+            lock (this)
+            {
+                return _items.TryPop(out value, out priority);
+            }
+        }
     }
 }

@@ -41,6 +41,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Backend\Moo\MooBackendFutureTask.cs" />
     <Compile Include="Backend\SynchronizationContextBackend.cs" />
     <Compile Include="Backend\WpfDispatcherBackend.cs" />
     <Compile Include="DataStructure\Debug\ListDebugView.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Enumerable\UnionAlgorithm.cs" />
     <Compile Include="Enumerable\WhereEnumerator.cs" />
     <Compile Include="ExceptionHandling\ExceptionUtility.cs" />
+    <Compile Include="IntervalHandle.cs" />
     <Compile Include="IPromiseEnumerable.cs" />
     <Compile Include="Enumerable\IPromiseEnumerator.cs" />
     <Compile Include="IPromiseEnumeratorNumericExtensions.cs" />
@@ -85,6 +87,9 @@
     <Compile Include="Promise.cs" />
     <Compile Include="PromiseBackend.cs" />
     <Compile Include="PromiseFactory.cs" />
+    <Compile Include="PromiseImpl\BaseIntervalImpl.cs" />
+    <Compile Include="PromiseImpl\BoundIntervalHandle.cs" />
+    <Compile Include="PromiseImpl\IntervalHandleImpl.cs" />
     <Compile Include="PromiseImpl\ManualPromise.cs" />
     <Compile Include="PromiseImpl\PromiseHelpers.cs" />
     <Compile Include="PromisePriority.cs" />
@@ -103,6 +108,8 @@
     <Compile Include="TaskRunner\Moo\PriorityTaskResult.cs" />
     <Compile Include="TaskRunner\TaskResult.cs" />
     <Compile Include="AsyncState.cs" />
+    <Compile Include="ThreadPool\Moo\FutureBackendResult.cs" />
+    <Compile Include="ThreadPool\Moo\FutureBackendResultWithPriority.cs" />
     <Compile Include="ThreadPool\ThreadPool.cs" />
     <Compile Include="ThreadPool\IThreadPool.cs" />
     <Compile Include="ThreadPool\IThreadPoolResult.cs" />

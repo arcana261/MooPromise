@@ -14,6 +14,10 @@ namespace MooPromise.ThreadPool
         IThreadPoolResult Create(Action action);
         IThreadPoolResult Create(Action action, int priority);
         IThreadPoolResult CreateImmediately(Action action);
+        IThreadPoolResult CreateFuture(int dueTickCount, Action action);
+        IThreadPoolResult CreateFuture(int dueTickCount, Action action, int priority);
+        IThreadPoolResult BeginFuture(int dueTickCount, Action action);
+        IThreadPoolResult BeginFuture(int dueTickCount, Action action, int priority);
         IBackend Backend { get; }
     }
 }

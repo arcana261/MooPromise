@@ -12,13 +12,42 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
-            Promise.DefaultFactory = PromiseBackend.MooThreadPool;
+            //Promise.DefaultFactory = PromiseBackend.MooThreadPool;
+
+            Promise.SetDefaultFactory(1, 1);
+
             var exit = new ManualResetEventSlim(false);
+            int ctr = 0;
 
-            var arr1 = new int[] { 1, 2, 3, 4, 5 };
-            var arr2 = new int[] { 2, 4, 4 };
+            IntervalHandle handle = null;
+            handle = Promise.Factory.SetInterval(() =>
+            {
+                var x = ctr++;
 
-            arr1.Promesify().Intersect(arr2).Each(x => Console.WriteLine(x)).Then(() => Console.WriteLine("done!"));
+                Console.WriteLine("hello, from timeout!: " + x);
+
+                return Promise.Factory.SetTimeout(2000, () => x);
+            }, 1000).Then(x =>
+            {
+                if (x == 5)
+                {
+                    throw new ArgumentException();
+                }
+
+                Console.WriteLine("---> 1: " + x);
+            }).Then(() =>
+            {
+                Console.WriteLine("---> 2");
+            }).Catch(err =>
+            {
+                Console.WriteLine(err);
+                handle.Cancel();
+            });
+
+            Promise.Factory.StartNew(() =>
+            {
+                Console.WriteLine("hello task!");
+            });
 
             exit.Wait();
 

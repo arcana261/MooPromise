@@ -208,18 +208,27 @@ namespace MooPromise.DataStructure
             return _items.Pop().Item;
         }
 
-        public bool TryPop(out T value)
+        public bool TryPop(out T value, out int priority)
         {
             Node x;
 
             if (_items.TryPop(out x))
             {
                 value = x.Item;
+                priority = x.Priority;
                 return true;
             }
 
             value = default(T);
+            priority = 0;
             return false;
+        }
+
+        public bool TryPop(out T value)
+        {
+            int priority;
+
+            return TryPop(out value, out priority);
         }
     }
 }

@@ -106,6 +106,50 @@ namespace MooPromise.ThreadPool
             return result;
         }
 
+        public IThreadPoolResult CreateFuture(int dueTickCount, Action action)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("AsyncThreadPool");
+            }
+
+            return new FutureBackendResult(_threadPool, dueTickCount, action);
+        }
+
+        public IThreadPoolResult CreateFuture(int dueTickCount, Action action, int priority)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("AsyncThreadPool");
+            }
+
+            return new FutureBackendResultWithPriority(_threadPool, dueTickCount, action, priority);
+        }
+
+        public IThreadPoolResult BeginFuture(int dueTickCount, Action action)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("AsyncThreadPool");
+            }
+
+            var result = CreateFuture(dueTickCount, action);
+            result.Start();
+            return result;
+        }
+
+        public IThreadPoolResult BeginFuture(int dueTickCount, Action action, int priority)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("AsyncThreadPool");
+            }
+
+            var result = CreateFuture(dueTickCount, action, priority);
+            result.Start();
+            return result;
+        }
+
         public IBackend Backend
         {
             get
