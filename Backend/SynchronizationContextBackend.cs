@@ -104,5 +104,15 @@ namespace MooPromise.Backend
         {
             AddFuture(dueTickTime, action);
         }
+
+        public void WaitUntilDisposed()
+        {
+
+        }
+
+        public bool WaitUntilDisposed(int waitMs)
+        {
+            return true;
+        }
     }
 }

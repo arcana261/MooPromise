@@ -184,6 +184,16 @@ namespace MooPromise.Backend.Moo
             GC.SuppressFinalize(this);
         }
 
+        public void WaitUntilDisposed()
+        {
+            _thread.Join();
+        }
+
+        public bool WaitUntilDisposed(int waitMs)
+        {
+            return _thread.Join(waitMs);
+        }
+
         private void Dispose(bool disposing)
         {
             if (disposing)
