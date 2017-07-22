@@ -196,6 +196,10 @@ namespace MooPromise.ThreadPool.Moo
                     {
                         action(Error);
                     }
+                    catch (ObjectDisposedException e)
+                    {
+
+                    }
                     catch (Exception e)
                     {
                         Environment.FailFast("Error while calling failed handlers", e);
