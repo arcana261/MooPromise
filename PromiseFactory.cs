@@ -145,6 +145,210 @@ namespace MooPromise
             return Create(action, PromisePriority.Normal);
         }
 
+        public IPromise SetTimeout(int delay, Action action, PromisePriority priority)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("PromiseFactory");
+            }
+
+            switch (priority)
+            {
+                case PromisePriority.Normal:
+                    return new NormalPromise(this, _taskFactory, _taskFactory.BeginFuture(Environment.TickCount + delay, action));
+                default:
+                    return new NormalPromise(this, _taskFactory, _taskFactory.BeginFuture(Environment.TickCount + delay, action, (int)priority));
+            }
+        }
+
+        public IPromise<T> SetTimeout<T>(int delay, Func<T> action, PromisePriority priority)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("PromiseFactory");
+            }
+
+            switch (priority)
+            {
+                case PromisePriority.Normal:
+                    return new NormalPromise<T>(this, _taskFactory, _taskFactory.BeginFuture(Environment.TickCount + delay, () => (object)action()));
+                default:
+                    return new NormalPromise<T>(this, _taskFactory, _taskFactory.BeginFuture(Environment.TickCount + delay, () => (object)action(), (int)priority));
+            }
+        }
+
+        public IPromise SetTimeout(int delay, Func<IPromise> action, PromisePriority priority)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("PromiseFactory");
+            }
+
+            switch (priority)
+            {
+                case PromisePriority.Normal:
+                    return new NormalPromise(this, _taskFactory, _taskFactory.BeginFuture(Environment.TickCount + delay, () => PromiseHelpers.ConvertPromiseToTaskResult(_taskFactory, action())));
+                default:
+                    return new NormalPromise(this, _taskFactory, _taskFactory.BeginFuture(Environment.TickCount + delay, () => PromiseHelpers.ConvertPromiseToTaskResult(_taskFactory, action()), (int)priority));
+            }
+        }
+
+        public IPromise<T> SetTimeout<T>(int delay, Func<IPromise<T>> action, PromisePriority priority)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("PromiseFactory");
+            }
+
+            switch (priority)
+            {
+                case PromisePriority.Normal:
+                    return new NormalPromise<T>(this, _taskFactory, _taskFactory.BeginFuture(Environment.TickCount + delay, () => PromiseHelpers.ConvertPromiseToTaskResult(_taskFactory, action())));
+                default:
+                    return new NormalPromise<T>(this, _taskFactory, _taskFactory.BeginFuture(Environment.TickCount + delay, () => PromiseHelpers.ConvertPromiseToTaskResult(_taskFactory, action()), (int)priority));
+            }
+        }
+
+        public IPromise SetTimeout(Action action, int delay, PromisePriority priority)
+        {
+            return SetTimeout(delay, action, priority);
+        }
+
+        public IPromise<T> SetTimeout<T>(Func<T> action, int delay, PromisePriority priority)
+        {
+            return SetTimeout(delay, action, priority);
+        }
+
+        public IPromise SetTimeout(Func<IPromise> action, int delay, PromisePriority priority)
+        {
+            return SetTimeout(delay, action, priority);
+        }
+
+        public IPromise<T> SetTimeout<T>(Func<IPromise<T>> action, int delay, PromisePriority priority)
+        {
+            return SetTimeout(delay, action, priority);
+        }
+
+        public IPromise SetTimeout(int delay, Action action)
+        {
+            return SetTimeout(delay, action, PromisePriority.Normal);
+        }
+
+        public IPromise<T> SetTimeout<T>(int delay, Func<T> action)
+        {
+            return SetTimeout(delay, action, PromisePriority.Normal);
+        }
+
+        public IPromise SetTimeout(int delay, Func<IPromise> action)
+        {
+            return SetTimeout(delay, action, PromisePriority.Normal);
+        }
+
+        public IPromise<T> SetTimeout<T>(int delay, Func<IPromise<T>> action)
+        {
+            return SetTimeout(delay, action, PromisePriority.Normal);
+        }
+
+        public IPromise SetTimeout(Action action, int delay)
+        {
+            return SetTimeout(delay, action);
+        }
+
+        public IPromise<T> SetTimeout<T>(Func<T> action, int delay)
+        {
+            return SetTimeout(delay, action);
+        }
+
+        public IPromise SetTimeout(Func<IPromise> action, int delay)
+        {
+            return SetTimeout(delay, action);
+        }
+
+        public IPromise<T> SetTimeout<T>(Func<IPromise<T>> action, int delay)
+        {
+            return SetTimeout(delay, action);
+        }
+
+        public IntervalHandle SetInterval(Action action, int delay, PromisePriority priority)
+        {
+            return new IntervalHandleImpl(this, delay, action, priority);
+        }
+
+        public IntervalHandle SetInterval(Func<IPromise> action, int delay, PromisePriority priority)
+        {
+            return new IntervalHandleImpl(this, delay, action, priority);
+        }
+
+        public IntervalHandle<T> SetInterval<T>(Func<T> action, int delay, PromisePriority priority)
+        {
+            return new IntervalHandleImpl<T>(this, delay, action, priority);
+        }
+
+        public IntervalHandle<T> SetInterval<T>(Func<IPromise<T>> action, int delay, PromisePriority priority)
+        {
+            return new IntervalHandleImpl<T>(this, delay, action, priority);
+        }
+
+        public IntervalHandle SetInterval(int delay, Action action, PromisePriority priority)
+        {
+            return SetInterval(action, delay, priority);
+        }
+
+        public IntervalHandle SetInterval(int delay, Func<IPromise> action, PromisePriority priority)
+        {
+            return SetInterval(action, delay, priority);
+        }
+
+        public IntervalHandle<T> SetInterval<T>(int delay, Func<T> action, PromisePriority priority)
+        {
+            return SetInterval(action, delay, priority);
+        }
+
+        public IntervalHandle<T> SetInterval<T>(int delay, Func<IPromise<T>> action, PromisePriority priority)
+        {
+            return SetInterval(action, delay, priority);
+        }
+
+        public IntervalHandle SetInterval(Action action, int delay)
+        {
+            return SetInterval(action, delay, PromisePriority.Normal);
+        }
+
+        public IntervalHandle SetInterval(Func<IPromise> action, int delay)
+        {
+            return SetInterval(action, delay, PromisePriority.Normal);
+        }
+
+        public IntervalHandle<T> SetInterval<T>(Func<T> action, int delay)
+        {
+            return SetInterval(action, delay, PromisePriority.Normal);
+        }
+
+        public IntervalHandle<T> SetInterval<T>(Func<IPromise<T>> action, int delay)
+        {
+            return SetInterval(action, delay, PromisePriority.Normal);
+        }
+
+        public IntervalHandle SetInterval(int delay, Action action)
+        {
+            return SetInterval(action, delay);
+        }
+
+        public IntervalHandle SetInterval(int delay, Func<IPromise> action)
+        {
+            return SetInterval(action, delay);
+        }
+
+        public IntervalHandle<T> SetInterval<T>(int delay, Func<T> action)
+        {
+            return SetInterval(action, delay);
+        }
+
+        public IntervalHandle<T> SetInterval<T>(int delay, Func<IPromise<T>> action)
+        {
+            return SetInterval(action, delay);
+        }
+
         public IPromise Create(Action action, PromisePriority priority)
         {
             if (_disposed)

@@ -2353,6 +2353,467 @@ namespace MooPromise.Enumerable
             return Intersect(other.Cast<IEnumerable<T>>(), comparer);
         }
 
+        public IPromiseEnumerable<T> Except(IPromiseEnumerable<T> items, IEqualityComparer<T> comparer)
+        {
+            if (!(items is PromiseEnumerable<T>))
+            {
+                throw new InvalidOperationException();
+            }
+
+            return new PromiseEnumerable<T>(_items.Then(left => ((PromiseEnumerable<T>)items)._items.Then(right => DifferenceAlgorithm.Difference(left, right, comparer))));
+        }
+
+        public IPromiseEnumerable<T> Except(IPromiseEnumerable<T> items)
+        {
+            return Except(items, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Except(IEnumerable<T> other)
+        {
+            return Except(other, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<IEnumerable<T>> other)
+        {
+            return Except(other, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<ICollection<T>> other)
+        {
+            return Except(other, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<IList<T>> other)
+        {
+            return Except(other, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<ISet<T>> other)
+        {
+            return Except(other, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<T[]> other)
+        {
+            return Except(other, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<List<T>> other)
+        {
+            return Except(other, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<HashSet<T>> other)
+        {
+            return Except(other, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<SortedSet<T>> other)
+        {
+            return Except(other, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<LinkedList<T>> other)
+        {
+            return Except(other, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<Stack<T>> other)
+        {
+            return Except(other, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<Queue<T>> other)
+        {
+            return Except(other, EqualityComparer<T>.Default);
+        }
+
+        public IPromiseEnumerable<T> Except(IEnumerable<T> other, IEqualityComparer<T> comparer)
+        {
+            return Except(new PromiseEnumerable<T>(this.Factory, other), comparer);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<IEnumerable<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Except(new PromiseEnumerable<T>(other), comparer);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<ICollection<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Except(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<IList<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Except(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<ISet<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Except(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<T[]> other, IEqualityComparer<T> comparer)
+        {
+            return Except(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<List<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Except(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<HashSet<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Except(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<SortedSet<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Except(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<LinkedList<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Except(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<Stack<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Except(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<T> Except(IPromise<Queue<T>> other, IEqualityComparer<T> comparer)
+        {
+            return Except(other.Cast<IEnumerable<T>>(), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            if (!(inner is PromiseEnumerable<Inner>))
+            {
+                throw new ArgumentException();
+            }
+
+            return new PromiseEnumerable<Result>(_items.Then(outerList => ((PromiseEnumerable<Inner>)inner)._items.Then(innerList =>
+                GroupJoinAlgorithm.GroupJoin(innerList, outerList, innerKeySelector, outerKeySelector, resultSelector, comparer))));
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, (x, i) => innerKeySelector(x), resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, (x, i) => outerKeySelector(x), innerKeySelector, resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, (x, i) => outerKeySelector(x), (x, i) => innerKeySelector(x), resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, (x, i) => Factory.Value(innerKeySelector(x, i)), resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, x => Factory.Value(innerKeySelector(x)), resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, (x, i) => Factory.Value(innerKeySelector(x, i)), resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, x => Factory.Value(innerKeySelector(x)), resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, (x, i) => Factory.Value(outerKeySelector(x, i)), innerKeySelector, resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, (x, i) => Factory.Value(outerKeySelector(x, i)), innerKeySelector, resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, x => Factory.Value(outerKeySelector(x)), innerKeySelector, resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, x => Factory.Value(outerKeySelector(x)), innerKeySelector, resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, (x, i) => Factory.Value(outerKeySelector(x, i)), innerKeySelector, resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, (x, i) => Factory.Value(outerKeySelector(x, i)), innerKeySelector, resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, x => Factory.Value(outerKeySelector(x)), innerKeySelector, resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, x => Factory.Value(outerKeySelector(x)), innerKeySelector, resultSelector, comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector, IEqualityComparer<Key> comparer)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, (x, y) => Factory.Value(resultSelector(x, y)), comparer);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, IPromise<Result>> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, IPromise<Key>> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, IPromise<Key>> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, int, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, IPromise<Key>> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, int, Key> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, int, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
+        public IPromiseEnumerable<Result> GroupJoin<Inner, Key, Result>(IPromiseEnumerable<Inner> inner, Func<T, Key> outerKeySelector, Func<Inner, Key> innerKeySelector, Func<T, IPromiseEnumerable<Inner>, Result> resultSelector)
+        {
+            return GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<Key>.Default);
+        }
+
         public PromiseFactory Factory
         {
             get

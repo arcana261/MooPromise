@@ -5,14 +5,14 @@ using System.Text;
 
 namespace MooPromise.Backend.Moo
 {
-    internal class MooBackendTask
+    internal class MooBackendFutureTask : MooBackendTask
     {
-        public MooBackendTask(Action action)
+        public MooBackendFutureTask(int dueTickCount, Action action) : base(action)
         {
-            this.Action = action;
+            this.DueTickCount = dueTickCount;
         }
 
-        public Action Action
+        public int DueTickCount
         {
             get;
             private set;

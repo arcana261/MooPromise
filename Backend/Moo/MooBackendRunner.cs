@@ -95,8 +95,11 @@ namespace MooPromise.Backend.Moo
         {
             while (!_shutdown)
             {
-                MooThreadPoolTask task = null;
+                MooBackendTask task = null;
+                int taskPriority = 0;
                 bool clearBusy = false;
+
+                IList<Tuple<MooBackendFutureTask, int>> notDueList = new List<Tuple<MooBackendFutureTask, int>>();
 
                 while (!_shutdown && task == null)
                 {
@@ -106,16 +109,41 @@ namespace MooPromise.Backend.Moo
                         clearBusy = false;
                     }
 
-                    if (!_context.Queue.TryPop(out task))
+                    if (!_context.Queue.TryPop(out task, out taskPriority))
                     {
+                        int minDue = int.MaxValue;
+
+                        foreach (var notDue in notDueList)
+                        {
+                            _context.Queue.Add(notDue.Item1, notDue.Item2);
+                            minDue = Math.Min(minDue, notDue.Item1.DueTickCount);
+                        }
+                        notDueList = new List<Tuple<MooBackendFutureTask, int>>();
+
+                        int sleepToNextDue = Math.Max(0, minDue - Environment.TickCount);
+
                         if (_busy)
                         {
                             clearBusy = true;
-                            _context.TaskAddedSignal.WaitOne(5000);
+                            _context.TaskAddedSignal.WaitOne(Math.Min(sleepToNextDue, 5000));
                         }
                         else
                         {
-                            _context.TaskAddedSignal.WaitOne(1000);
+                            _context.TaskAddedSignal.WaitOne(Math.Min(sleepToNextDue, 1000));
+                        }
+                    }
+                    else if ((task is MooBackendFutureTask))
+                    {
+                        var futureTask = task as MooBackendFutureTask;
+
+                        if (Environment.TickCount < futureTask.DueTickCount)
+                        {
+                            notDueList.Add(Tuple.Create(futureTask, taskPriority));
+                            task = null;
+                        }
+                        else
+                        {
+                            break;
                         }
                     }
                     else
@@ -123,6 +151,15 @@ namespace MooPromise.Backend.Moo
                         break;
                     }
                 }
+
+                if (!_shutdown)
+                {
+                    foreach (var notDue in notDueList)
+                    {
+                        _context.Queue.Add(notDue.Item1, notDue.Item2);
+                    }
+                }
+                notDueList = new List<Tuple<MooBackendFutureTask, int>>();
 
                 if (task != null)
                 {
