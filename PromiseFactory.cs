@@ -561,10 +561,17 @@ namespace MooPromise
 
         public IPromise Sleep(int ms)
         {
-            return StartNew(() =>
+            var ret = new ManualPromise(this, _taskFactory);
+
+            SetTimeout(() =>
             {
-                Thread.Sleep(ms);
+                ret.Resolve();
+            }, ms).Catch(err =>
+            {
+                ret.Reject(err);
             });
+
+            return ret;
         }
 
         public IPromise JoinParallel(IEnumerable<IPromise> promisesAsEum)
