@@ -363,8 +363,9 @@ namespace MooPromise
             });
         }
 
-        public IPromise JoinParallel(IEnumerable<IPromise> promises)
+        public IPromise JoinParallel(IEnumerable<IPromise> promisesAsEum)
         {
+            var promises = promisesAsEum.ToList();
             var result = new ManualPromise(this, _taskFactory);
             result.Start();
 
@@ -372,6 +373,10 @@ namespace MooPromise
             {
                 promise.Then(() =>
                 {
+#if DEBUG
+                    var states = promises.Select(x => x.State).ToList();
+#endif
+
                     if (promises.All(x => x.State == AsyncState.Completed))
                     {
                         result.SetCompleted();
