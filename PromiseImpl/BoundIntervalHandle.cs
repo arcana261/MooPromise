@@ -7,9 +7,9 @@ namespace MooPromise.PromiseImpl
 {
     internal class BoundIntervalHandle : BaseIntervalImpl
     {
-        private IntervalHandleBase _owner;
+        private IPromiseIntervalBase _owner;
 
-        public BoundIntervalHandle(IntervalHandleBase owner)
+        public BoundIntervalHandle(IPromiseIntervalBase owner)
         {
             this._owner = owner;
         }
@@ -54,9 +54,9 @@ namespace MooPromise.PromiseImpl
 
     internal class BoundIntervalHandle<T> : BaseIntervalImpl<T>
     {
-        private IntervalHandleBase _owner;
+        private IPromiseIntervalBase _owner;
 
-        public BoundIntervalHandle(IntervalHandleBase owner)
+        public BoundIntervalHandle(IPromiseIntervalBase owner)
         {
             this._owner = owner;
         }

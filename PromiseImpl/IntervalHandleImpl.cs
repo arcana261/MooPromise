@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MooPromise.PromiseImpl
 {
-    internal class BackboneIntervalHandleImpl<Backbone> : IntervalHandleBase where Backbone : BackboneIntervalImpl
+    internal class BackboneIntervalHandleImpl<Backbone> : IPromiseIntervalBase where Backbone : BackboneIntervalImpl
     {
         private Backbone _backbone;
         private Func<IPromise<object>> _action;
@@ -104,7 +104,7 @@ namespace MooPromise.PromiseImpl
 
     internal class IntervalHandleImpl : BaseIntervalImpl
     {
-        private IntervalHandleBase _base;
+        private IPromiseIntervalBase _base;
 
         public IntervalHandleImpl(PromiseFactory factory, int timeout, Func<IPromise> action, PromisePriority priority)
         {
@@ -166,7 +166,7 @@ namespace MooPromise.PromiseImpl
 
     internal class IntervalHandleImpl<T> : BaseIntervalImpl<T>
     {
-        private IntervalHandleBase _base;
+        private IPromiseIntervalBase _base;
 
         public IntervalHandleImpl(PromiseFactory factory, int timeout, Func<IPromise<T>> action, PromisePriority priority)
         {

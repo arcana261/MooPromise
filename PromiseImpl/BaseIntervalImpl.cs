@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MooPromise.PromiseImpl
 {
-    internal abstract class BackboneIntervalImpl : IntervalHandleBase
+    internal abstract class BackboneIntervalImpl : IPromiseIntervalBase
     {
         private IList<Action<Exception>> _errorHandlers;
         private IList<Action<object>> _completedHandlers;
@@ -247,117 +247,117 @@ namespace MooPromise.PromiseImpl
         }
     }
 
-    internal abstract class BaseIntervalImpl : BackboneIntervalImpl, IntervalHandle
+    internal abstract class BaseIntervalImpl : BackboneIntervalImpl, IPromiseInterval
     {
-        public IntervalHandle Catch(Action handler)
+        public IPromiseInterval Catch(Action handler)
         {
             return BaseCatch(handler, new BoundIntervalHandle(this));
         }
 
-        public IntervalHandle Catch(Action<Exception> handler)
+        public IPromiseInterval Catch(Action<Exception> handler)
         {
             return BaseCatch(handler, new BoundIntervalHandle(this));
         }
 
-        public IntervalHandle Finally(Action handler)
+        public IPromiseInterval Finally(Action handler)
         {
             return BaseFinally(handler, new BoundIntervalHandle(this));
         }
 
-        public IntervalHandle Finally(Action<Exception> handler)
+        public IPromiseInterval Finally(Action<Exception> handler)
         {
             return BaseFinally(handler, new BoundIntervalHandle(this));
         }
 
-        public IntervalHandle Then(Func<IPromise> handler)
+        public IPromiseInterval Then(Func<IPromise> handler)
         {
             return BaseThen(handler, new BoundIntervalHandle(this));
         }
 
-        public IntervalHandle Then(Action handler)
+        public IPromiseInterval Then(Action handler)
         {
             return BaseThen(handler, new BoundIntervalHandle(this));
         }
 
-        public IntervalHandle<T> Then<T>(Func<T> handler)
+        public IPromiseInterval<T> Then<T>(Func<T> handler)
         {
             return BaseThen(handler, new BoundIntervalHandle<T>(this));
         }
 
-        public IntervalHandle<T> Then<T>(Func<IPromise<T>> handler)
+        public IPromiseInterval<T> Then<T>(Func<IPromise<T>> handler)
         {
             return BaseThen(handler, new BoundIntervalHandle<T>(this));
         }
     }
 
-    internal abstract class BaseIntervalImpl<T> : BackboneIntervalImpl, IntervalHandle<T>
+    internal abstract class BaseIntervalImpl<T> : BackboneIntervalImpl, IPromiseInterval<T>
     {
-        public IntervalHandle Cast()
+        public IPromiseInterval Cast()
         {
             return Then(() => { });
         }
 
-        public IntervalHandle<E> Cast<E>()
+        public IPromiseInterval<E> Cast<E>()
         {
             return Then(value => (E)((object)value));
         }
 
-        public IntervalHandle<T> Catch(Action handler)
+        public IPromiseInterval<T> Catch(Action handler)
         {
             return BaseCatch(handler, new BoundIntervalHandle<T>(this));
         }
 
-        public IntervalHandle<T> Catch(Action<Exception> handler)
+        public IPromiseInterval<T> Catch(Action<Exception> handler)
         {
             return BaseCatch(handler, new BoundIntervalHandle<T>(this));
         }
 
-        public IntervalHandle<T> Finally(Action handler)
+        public IPromiseInterval<T> Finally(Action handler)
         {
             return BaseFinally(handler, new BoundIntervalHandle<T>(this));
         }
 
-        public IntervalHandle<T> Finally(Action<Exception> handler)
+        public IPromiseInterval<T> Finally(Action<Exception> handler)
         {
             return BaseFinally(handler, new BoundIntervalHandle<T>(this));
         }
 
-        public IntervalHandle Then(Func<IPromise> handler)
+        public IPromiseInterval Then(Func<IPromise> handler)
         {
             return Then(value => handler());
         }
 
-        public IntervalHandle Then(Func<T, IPromise> handler)
+        public IPromiseInterval Then(Func<T, IPromise> handler)
         {
             return BaseThen(handler, new BoundIntervalHandle(this));
         }
 
-        public IntervalHandle Then(Action handler)
+        public IPromiseInterval Then(Action handler)
         {
             return Then(value => handler());
         }
 
-        public IntervalHandle Then(Action<T> handler)
+        public IPromiseInterval Then(Action<T> handler)
         {
             return BaseThen(handler, new BoundIntervalHandle(this));
         }
 
-        public IntervalHandle<E> Then<E>(Func<IPromise<E>> handler)
+        public IPromiseInterval<E> Then<E>(Func<IPromise<E>> handler)
         {
             return Then(value => handler());
         }
 
-        public IntervalHandle<E> Then<E>(Func<E> handler)
+        public IPromiseInterval<E> Then<E>(Func<E> handler)
         {
             return Then(value => handler());
         }
 
-        public IntervalHandle<E> Then<E>(Func<T, IPromise<E>> handler)
+        public IPromiseInterval<E> Then<E>(Func<T, IPromise<E>> handler)
         {
             return BaseThen(handler, new BoundIntervalHandle<E>(this));
         }
 
-        public IntervalHandle<E> Then<E>(Func<T, E> handler)
+        public IPromiseInterval<E> Then<E>(Func<T, E> handler)
         {
             return BaseThen(handler, new BoundIntervalHandle<E>(this));
         }

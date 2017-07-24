@@ -19,7 +19,7 @@ namespace ConsoleApp
             var exit = new ManualResetEventSlim(false);
             int ctr = 0;
 
-            IntervalHandle handle = null;
+            IPromiseInterval handle = null;
             handle = Promise.Factory.SetInterval(() =>
             {
                 var x = ctr++;

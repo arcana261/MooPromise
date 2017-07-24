@@ -269,82 +269,82 @@ namespace MooPromise
             return SetTimeout(delay, action);
         }
 
-        public IntervalHandle SetInterval(Action action, int delay, PromisePriority priority)
+        public IPromiseInterval SetInterval(Action action, int delay, PromisePriority priority)
         {
             return new IntervalHandleImpl(this, delay, action, priority);
         }
 
-        public IntervalHandle SetInterval(Func<IPromise> action, int delay, PromisePriority priority)
+        public IPromiseInterval SetInterval(Func<IPromise> action, int delay, PromisePriority priority)
         {
             return new IntervalHandleImpl(this, delay, action, priority);
         }
 
-        public IntervalHandle<T> SetInterval<T>(Func<T> action, int delay, PromisePriority priority)
+        public IPromiseInterval<T> SetInterval<T>(Func<T> action, int delay, PromisePriority priority)
         {
             return new IntervalHandleImpl<T>(this, delay, action, priority);
         }
 
-        public IntervalHandle<T> SetInterval<T>(Func<IPromise<T>> action, int delay, PromisePriority priority)
+        public IPromiseInterval<T> SetInterval<T>(Func<IPromise<T>> action, int delay, PromisePriority priority)
         {
             return new IntervalHandleImpl<T>(this, delay, action, priority);
         }
 
-        public IntervalHandle SetInterval(int delay, Action action, PromisePriority priority)
+        public IPromiseInterval SetInterval(int delay, Action action, PromisePriority priority)
         {
             return SetInterval(action, delay, priority);
         }
 
-        public IntervalHandle SetInterval(int delay, Func<IPromise> action, PromisePriority priority)
+        public IPromiseInterval SetInterval(int delay, Func<IPromise> action, PromisePriority priority)
         {
             return SetInterval(action, delay, priority);
         }
 
-        public IntervalHandle<T> SetInterval<T>(int delay, Func<T> action, PromisePriority priority)
+        public IPromiseInterval<T> SetInterval<T>(int delay, Func<T> action, PromisePriority priority)
         {
             return SetInterval(action, delay, priority);
         }
 
-        public IntervalHandle<T> SetInterval<T>(int delay, Func<IPromise<T>> action, PromisePriority priority)
+        public IPromiseInterval<T> SetInterval<T>(int delay, Func<IPromise<T>> action, PromisePriority priority)
         {
             return SetInterval(action, delay, priority);
         }
 
-        public IntervalHandle SetInterval(Action action, int delay)
+        public IPromiseInterval SetInterval(Action action, int delay)
         {
             return SetInterval(action, delay, PromisePriority.Normal);
         }
 
-        public IntervalHandle SetInterval(Func<IPromise> action, int delay)
+        public IPromiseInterval SetInterval(Func<IPromise> action, int delay)
         {
             return SetInterval(action, delay, PromisePriority.Normal);
         }
 
-        public IntervalHandle<T> SetInterval<T>(Func<T> action, int delay)
+        public IPromiseInterval<T> SetInterval<T>(Func<T> action, int delay)
         {
             return SetInterval(action, delay, PromisePriority.Normal);
         }
 
-        public IntervalHandle<T> SetInterval<T>(Func<IPromise<T>> action, int delay)
+        public IPromiseInterval<T> SetInterval<T>(Func<IPromise<T>> action, int delay)
         {
             return SetInterval(action, delay, PromisePriority.Normal);
         }
 
-        public IntervalHandle SetInterval(int delay, Action action)
+        public IPromiseInterval SetInterval(int delay, Action action)
         {
             return SetInterval(action, delay);
         }
 
-        public IntervalHandle SetInterval(int delay, Func<IPromise> action)
+        public IPromiseInterval SetInterval(int delay, Func<IPromise> action)
         {
             return SetInterval(action, delay);
         }
 
-        public IntervalHandle<T> SetInterval<T>(int delay, Func<T> action)
+        public IPromiseInterval<T> SetInterval<T>(int delay, Func<T> action)
         {
             return SetInterval(action, delay);
         }
 
-        public IntervalHandle<T> SetInterval<T>(int delay, Func<IPromise<T>> action)
+        public IPromiseInterval<T> SetInterval<T>(int delay, Func<IPromise<T>> action)
         {
             return SetInterval(action, delay);
         }
