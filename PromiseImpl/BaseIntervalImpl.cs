@@ -226,13 +226,16 @@ namespace MooPromise.PromiseImpl
                         {
                             var next = handler(value);
 
-                            next.Then(result =>
+                            if (next != null)
                             {
-                                ret.RaiseCompleted(result);
-                            }).Catch(err =>
-                            {
-                                ret.RaiseFailed(err);
-                            });
+                                next.Then(result =>
+                                {
+                                    ret.RaiseCompleted(result);
+                                }).Catch(err =>
+                                {
+                                    ret.RaiseFailed(err);
+                                });
+                            }
                         }
                         catch (Exception inner)
                         {

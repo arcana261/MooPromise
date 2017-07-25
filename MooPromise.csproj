@@ -44,6 +44,11 @@
     <Compile Include="Backend\Moo\MooBackendFutureTask.cs" />
     <Compile Include="Backend\SynchronizationContextBackend.cs" />
     <Compile Include="Backend\WpfDispatcherBackend.cs" />
+    <Compile Include="ControlState.cs" />
+    <Compile Include="ControlValue.cs" />
+    <Compile Include="Control\Control.cs" />
+    <Compile Include="Control\For.cs" />
+    <Compile Include="Control\While.cs" />
     <Compile Include="DataStructure\Debug\ListDebugView.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="Enumerable\AnyAlgorithm.cs" />
@@ -79,7 +84,7 @@
     <Compile Include="Enumerable\UnionAlgorithm.cs" />
     <Compile Include="Enumerable\WhereEnumerator.cs" />
     <Compile Include="ExceptionHandling\ExceptionUtility.cs" />
-    <Compile Include="IntervalHandle.cs" />
+    <Compile Include="IPromiseInterval.cs" />
     <Compile Include="IPromiseEnumerable.cs" />
     <Compile Include="Enumerable\IPromiseEnumerator.cs" />
     <Compile Include="IPromiseEnumeratorNumericExtensions.cs" />

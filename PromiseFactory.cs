@@ -14,6 +14,7 @@ namespace MooPromise
         private ITaskFactory _taskFactory;
         private IBackend _backend;
         private bool _disposed;
+        private Control.Control _controlObject;
 
         public PromiseFactory(IBackend backend)
         {
@@ -24,6 +25,28 @@ namespace MooPromise
 
             _backend = backend;
             _taskFactory = new TaskFactory(backend);
+            _controlObject = null;
+        }
+
+        public Control.Control Control
+        {
+            get
+            {
+                if (_disposed)
+                {
+                    throw new ObjectDisposedException("PromiseFactory");
+                }
+
+                lock (this)
+                {
+                    if (_controlObject == null)
+                    {
+                        _controlObject = new Control.Control(this);
+                    }
+
+                    return _controlObject;
+                }
+            }
         }
 
         public bool IsDisposed

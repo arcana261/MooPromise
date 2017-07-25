@@ -17,36 +17,12 @@ namespace ConsoleApp
             Promise.SetDefaultFactory(1, 1);
 
             var exit = new ManualResetEventSlim(false);
-            int ctr = 0;
 
-            IPromiseInterval handle = null;
-            handle = Promise.Factory.SetInterval(() =>
-            {
-                var x = ctr++;
+            int x = 0;
 
-                Console.WriteLine("hello, from timeout!: " + x);
-
-                return Promise.Factory.SetTimeout(2000, () => x);
-            }, 1000).Then(x =>
+            Promise.Factory.Control.For(0, i => i < 10, i => i + 1).Do(i => Console.WriteLine(i)).Then(() =>
             {
-                if (x == 5)
-                {
-                    throw new ArgumentException();
-                }
-
-                Console.WriteLine("---> 1: " + x);
-            }).Then(() =>
-            {
-                Console.WriteLine("---> 2");
-            }).Catch(err =>
-            {
-                Console.WriteLine(err);
-                handle.Cancel();
-            });
-
-            Promise.Factory.StartNew(() =>
-            {
-                Console.WriteLine("hello task!");
+                Console.WriteLine("finished!");
             });
 
             exit.Wait();

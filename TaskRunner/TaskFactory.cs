@@ -124,10 +124,10 @@ namespace MooPromise.TaskRunner
                         ret.SetFailed(error);
                     });
                 }
-                else
-                {
-                    ret.SetCompleted();
-                }
+                //else
+                //{
+                //    ret.SetCompleted();
+                //}
             }).Catch(error =>
             {
                 ret.SetFailed(error);
@@ -165,10 +165,6 @@ namespace MooPromise.TaskRunner
                         ret.SetFailed(error);
                     });
                 }
-                else
-                {
-                    ret.SetCompleted();
-                }
             }, priority).Catch(error =>
             {
                 ret.SetFailed(error);
@@ -205,10 +201,6 @@ namespace MooPromise.TaskRunner
                     {
                         ret.SetFailed(error);
                     });
-                }
-                else
-                {
-                    ret.SetCompleted();
                 }
             }).Catch(error =>
             {
