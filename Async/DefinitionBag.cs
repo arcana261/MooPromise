@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MooPromise.Control
+namespace MooPromise.Async
 {
     internal class DefinitionBag
     {
@@ -59,6 +59,34 @@ namespace MooPromise.Control
                 }
 
                 return (T)x.Item2;
+            }
+        }
+
+        public void Set<T>(string name, T value)
+        {
+            lock (this)
+            {
+                Tuple<Type, object> x;
+
+                if (!_bag.TryGetValue(name, out x))
+                {
+                    if (_parent != null)
+                    {
+                        _parent.Set(name, value);
+                        return;
+                    }
+
+                    throw new InvalidOperationException("variable not defined");
+                }
+
+                Type t = typeof(T);
+
+                if (!x.Item1.IsAssignableFrom(t))
+                {
+                    throw new InvalidCastException();
+                }
+
+                Tuple.Create<Type, object>(x.Item1, (object)value);
             }
         }
     }

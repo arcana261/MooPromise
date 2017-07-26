@@ -20,6 +20,14 @@ namespace MooPromise.Control
             this._iterator = iterator;
         }
 
+        public PromiseFactory Factory
+        {
+            get
+            {
+                return _factory;
+            }
+        }
+
         public IPromise Do(Func<T, IPromise> body)
         {
             return Do(x =>
@@ -148,6 +156,36 @@ namespace MooPromise.Control
         }
 
         public IPromise<ControlValue<E>> Do<E>(Func<IPromise<ControlValue<E>>> body)
+        {
+            return Do(x => body());
+        }
+
+        public IPromise<E> Do<E>(Func<T, IPromise<E>> body)
+        {
+            return Do(x =>
+            {
+                var next = body(x);
+
+                if (next == null)
+                {
+                    return null;
+                }
+
+                return next.Then(result => new ControlValue<E>(result));
+            }).Then(result => result.Value);
+        }
+
+        public IPromise<E> Do<E>(Func<IPromise<E>> body)
+        {
+            return Do(x => body());
+        }
+
+        public IPromise<E> Do<E>(Func<T, E> body)
+        {
+            return Do(x => _factory.Value(body(x)));
+        }
+
+        public IPromise<E> Do<E>(Func<E> body)
         {
             return Do(x => body());
         }

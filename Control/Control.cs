@@ -14,6 +14,59 @@ namespace MooPromise.Control
             this._factory = factory;
         }
 
+        public PromiseFactory Factory
+        {
+            get
+            {
+                return _factory;
+            }
+        }
+
+        public DoWhileControlValue<T> Do<T>(Func<IPromise<ControlValue<T>>> body)
+        {
+            return new DoWhileControlValue<T>(_factory, body);
+        }
+
+        public DoWhileControlValue<T> Do<T>(Func<ControlValue<T>> body)
+        {
+            return Do(() => _factory.Value(body()));
+        }
+
+        public DoWhileControlState Do(Func<IPromise<ControlState>> body)
+        {
+            return new DoWhileControlState(_factory, body);
+        }
+
+        public DoWhileControlState Do(Func<ControlState> body)
+        {
+            return Do(() => _factory.Value(body()));
+        }
+
+        public DoWhileResult<T> Do<T>(Func<IPromise<T>> body)
+        {
+            return new DoWhileResult<T>(_factory, body);
+        }
+
+        public DoWhileResult<T> Do<T>(Func<T> body)
+        {
+            return Do(() => _factory.Value(body()));
+        }
+
+        public DoWhileVoid Do(Func<IPromise> body)
+        {
+            return new DoWhileVoid(_factory, body);
+        }
+
+        public DoWhileVoid Do(Action body)
+        {
+            return Do(() =>
+            {
+                body();
+
+                return _factory.Value();
+            });
+        }
+
         public While While(Func<IPromise<bool>> condition)
         {
             return new While(_factory, condition);

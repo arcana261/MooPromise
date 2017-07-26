@@ -22,6 +22,14 @@ namespace MooPromise.Control
 
         }
 
+        public PromiseFactory Factory
+        {
+            get
+            {
+                return _factory;
+            }
+        }
+
         public IPromise Do(Action body)
         {
             return Do(() =>
@@ -90,6 +98,26 @@ namespace MooPromise.Control
 
                 return body();
             });
+        }
+
+        public IPromise<T> Do<T>(Func<IPromise<T>> body)
+        {
+            return Do(() =>
+            {
+                var next = body();
+
+                if (next == null)
+                {
+                    return null;
+                }
+
+                return next.Then(result => new ControlValue<T>(result));
+            }).Then(result => result.Value);
+        }
+
+        public IPromise<T> Do<T>(Func<T> body)
+        {
+            return Do(() => _factory.Value(body()));
         }
 
         public If Else

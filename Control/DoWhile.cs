@@ -5,14 +5,51 @@ using System.Text;
 
 namespace MooPromise.Control
 {
-    public class DoWhile
+    public class DoWhileResult<T>
     {
-        private PromiseFactory _factory;
-        private Func<IPromise<bool>> _condition;
+        private DoWhileControlValue<T> _body;
 
-        public IPromise While(Func<IPromise> body)
+        internal DoWhileResult(PromiseFactory factory, Func<IPromise<T>> body)
         {
-            return While(() =>
+            _body = new DoWhileControlValue<T>(factory, () =>
+            {
+                var next = body();
+
+                if (next == null)
+                {
+                    return null;
+                }
+
+                return next.Then(result => new ControlValue<T>(result));
+            });
+        }
+
+        public PromiseFactory Factory
+        {
+            get
+            {
+                return _body.Factory;
+            }
+        }
+
+        public IPromise<T> While(Func<IPromise<bool>> condition)
+        {
+            return _body.While(condition).Then(result => result.Value);
+        }
+
+        public IPromise<T> While(Func<bool> condition)
+        {
+            return While(() => _body.Factory.Value(condition()));
+        }
+    }
+
+    public class DoWhileVoid
+    {
+        private DoWhileControlState _body;
+
+        internal DoWhileVoid(PromiseFactory factory, Func<IPromise> body)
+        {
+            _body = new DoWhileControlState(factory, () =>
             {
                 var next = body();
 
@@ -22,22 +59,35 @@ namespace MooPromise.Control
                 }
 
                 return next.Then(() => ControlState.Continue);
-            }).Cast();
-        }
-
-        public IPromise While(Action body)
-        {
-            return While(() =>
-            {
-                body();
-
-                return _factory.Value();
             });
         }
 
-        public IPromise<ControlState> While(Func<IPromise<ControlState>> body)
+        public PromiseFactory Factory
         {
-            return While(() =>
+            get
+            {
+                return _body.Factory;
+            }
+        }
+
+        public IPromise While(Func<IPromise<bool>> condition)
+        {
+            return _body.While(condition).Cast();
+        }
+
+        public IPromise While(Func<bool> condition)
+        {
+            return While(() => _body.Factory.Value(condition()));
+        }
+    }
+
+    public class DoWhileControlState
+    {
+        private DoWhileControlValue<object> _body;
+
+        internal DoWhileControlState(PromiseFactory factory, Func<IPromise<ControlState>> body)
+        {
+            _body = new DoWhileControlValue<object>(factory, () =>
             {
                 var next = body();
 
@@ -47,22 +97,50 @@ namespace MooPromise.Control
                 }
 
                 return next.Then(result => new ControlValue<object>(result));
-            }).Then(x => x.State);
+            });
         }
 
-        public IPromise<ControlState> While(Func<ControlState> body)
+        public PromiseFactory Factory
         {
-            return While(() => _factory.Value(body()));
+            get
+            {
+                return _body.Factory;
+            }
         }
 
-        public IPromise<ControlValue<T>> While<T>(Func<ControlValue<T>> body)
+        public IPromise<ControlState> While(Func<IPromise<bool>> condition)
         {
-            return While(() => _factory.Value(body()));
+            return _body.While(condition).Then(result => result.State);
         }
 
-        public IPromise<ControlValue<T>> While<T>(Func<IPromise<ControlValue<T>>> body)
+        public IPromise<ControlState> While(Func<bool> condition)
         {
-            var next = body();
+            return While(() => _body.Factory.Value(condition()));
+        }
+    }
+
+    public class DoWhileControlValue<T>
+    {
+        private PromiseFactory _factory;
+        private Func<IPromise<ControlValue<T>>> _body;
+
+        internal DoWhileControlValue(PromiseFactory factory, Func<IPromise<ControlValue<T>>> body)
+        {
+            this._factory = factory;
+            this._body = body;
+        }
+
+        public PromiseFactory Factory
+        {
+            get
+            {
+                return _factory;
+            }
+        }
+
+        public IPromise<ControlValue<T>> While(Func<IPromise<bool>> condition)
+        {
+            var next = _body();
 
             if (next == null)
             {
@@ -83,7 +161,7 @@ namespace MooPromise.Control
 
                 if (result.State == ControlState.Continue)
                 {
-                    var nextCondition = _condition();
+                    var nextCondition = condition();
 
                     if (nextCondition == null)
                     {
@@ -97,12 +175,17 @@ namespace MooPromise.Control
                             return _factory.Value(ControlValue<T>.Continue);
                         }
 
-                        return While(body);
+                        return While(condition);
                     });
                 }
 
                 throw new InvalidOperationException();
             });
+        }
+
+        public IPromise<ControlValue<T>> While(Func<bool> condition)
+        {
+            return While(() => _factory.Value(condition()));
         }
     }
 }

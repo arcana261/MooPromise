@@ -41,13 +41,20 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Async\Async.cs" />
+    <Compile Include="Async\DoWhile.cs" />
+    <Compile Include="Async\While.cs" />
     <Compile Include="Backend\Moo\MooBackendFutureTask.cs" />
     <Compile Include="Backend\SynchronizationContextBackend.cs" />
     <Compile Include="Backend\WpfDispatcherBackend.cs" />
     <Compile Include="ControlState.cs" />
     <Compile Include="ControlValue.cs" />
     <Compile Include="Control\Control.cs" />
+    <Compile Include="Async\DefinitionBag.cs" />
+    <Compile Include="Control\DoWhile.cs" />
     <Compile Include="Control\For.cs" />
+    <Compile Include="Control\If.cs" />
+    <Compile Include="Async\Scope.cs" />
     <Compile Include="Control\While.cs" />
     <Compile Include="DataStructure\Debug\ListDebugView.cs" />
     <Compile Include="EnumerableExtensions.cs" />
