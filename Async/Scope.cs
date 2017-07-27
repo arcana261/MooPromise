@@ -34,6 +34,14 @@ namespace MooPromise.Async
             }
         }
 
+        public DefinitionBag Variables
+        {
+            get
+            {
+                return _defs;
+            }
+        }
+
         internal void Next(Func<IPromise<ControlValue<T>>> action)
         {
             lock (this)
@@ -44,7 +52,7 @@ namespace MooPromise.Async
                 }
                 else
                 {
-                    _last.Then(value =>
+                    _last = _last.Then(value =>
                     {
                         if (value == null || value.State != ControlState.Continue)
                         {
@@ -166,20 +174,58 @@ namespace MooPromise.Async
             return Run(() => result);
         }
 
+        public Scope<T> Return(Func<T> result)
+        {
+            return Run(() => result());
+        }
+
+        public Scope<T> Return(Func<IPromise<T>> result)
+        {
+            return Run(() => result());
+        }
+
         public Scope<T> Begin(Action<Scope<T>> block)
         {
-            Scope<T> newScope = new Scope<T>(_factory, _defs);
+            return Run(() =>
+            {
+                Scope<T> newScope = new Scope<T>(_factory, _defs);
+                block(newScope);
+
+                return newScope.Finish();
+            });
+        }
+
+        public Scope<T> Begin(Action block)
+        {
+            return Begin(scope => block());
+        }
+
+        internal Scope<E> BeginImmediately<E>(Action<Scope<E>> block)
+        {
+            Scope<E> newScope = new Scope<E>(_factory, _defs);
             block(newScope);
+
+            return newScope;
+        }
+
+        public While<T> While(Action<Scope<bool>> condition)
+        {
+            return new While<T>(this, condition);
         }
 
         public While<T> While(Func<IPromise<bool>> condition)
         {
-            return new While<T>(this, condition);
+            return While(scope => scope.Return(condition));
         }
 
         public While<T> While(Func<bool> condition)
         {
             return While(() => _factory.Value(condition()));
+        }
+
+        public For<T> For(Func<IPromise<T>> initial, Action<T, Scope<bool>> condition, Action<T, Scope<T>> iterator)
+        {
+            return null;
         }
     }
 }

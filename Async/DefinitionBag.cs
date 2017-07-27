@@ -5,15 +5,27 @@ using System.Text;
 
 namespace MooPromise.Async
 {
-    internal class DefinitionBag
+    public class DefinitionBag
     {
+        private class Value
+        {
+            public Type Type { get; set; }
+            public object Variable { get; set; }
+
+            public Value(Type type, object value)
+            {
+                this.Type = type;
+                this.Variable = value;
+            }
+        }
+
         private DefinitionBag _parent;
-        private IDictionary<string, Tuple<Type, object>> _bag;
+        private IDictionary<string, Value> _bag;
 
         public DefinitionBag(DefinitionBag parent)
         {
             this._parent = parent;
-            this._bag = new Dictionary<string, Tuple<Type, object>>();
+            this._bag = new Dictionary<string, Value>();
         }
 
         public DefinitionBag()
@@ -31,7 +43,16 @@ namespace MooPromise.Async
                     throw new InvalidOperationException("parameter value re-definition");
                 }
 
-                _bag.Add(name, Tuple.Create<Type, object>(typeof(T), null));
+                _bag.Add(name, new Value(typeof(T), null));
+            }
+        }
+
+        public void Define<T>(string name, T value)
+        {
+            lock (this)
+            {
+                Define<T>(name);
+                Set<T>(name, value);
             }
         }
 
@@ -39,7 +60,7 @@ namespace MooPromise.Async
         {
             lock (this)
             {
-                Tuple<Type, object> x;
+                Value x;
 
                 if (!_bag.TryGetValue(name, out x))
                 {
@@ -53,12 +74,12 @@ namespace MooPromise.Async
 
                 Type t = typeof(T);
 
-                if (!x.Item1.IsAssignableFrom(t))
+                if (!x.Type.IsAssignableFrom(t))
                 {
                     throw new InvalidCastException();
                 }
 
-                return (T)x.Item2;
+                return (T)x.Variable;
             }
         }
 
@@ -66,7 +87,7 @@ namespace MooPromise.Async
         {
             lock (this)
             {
-                Tuple<Type, object> x;
+                Value x;
 
                 if (!_bag.TryGetValue(name, out x))
                 {
@@ -81,12 +102,12 @@ namespace MooPromise.Async
 
                 Type t = typeof(T);
 
-                if (!x.Item1.IsAssignableFrom(t))
+                if (!x.Type.IsAssignableFrom(t))
                 {
                     throw new InvalidCastException();
                 }
 
-                Tuple.Create<Type, object>(x.Item1, (object)value);
+                x.Variable = (object)value;
             }
         }
     }

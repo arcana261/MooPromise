@@ -15,6 +15,7 @@ namespace MooPromise
         private IBackend _backend;
         private bool _disposed;
         private Control.Control _controlObject;
+        private Async.Async _asyncObject;
 
         public PromiseFactory(IBackend backend)
         {
@@ -45,6 +46,27 @@ namespace MooPromise
                     }
 
                     return _controlObject;
+                }
+            }
+        }
+
+        public Async.Async Async
+        {
+            get
+            {
+                if (_disposed)
+                {
+                    throw new ObjectDisposedException("PromiseFactory");
+                }
+
+                lock (this)
+                {
+                    if (_asyncObject == null)
+                    {
+                        _asyncObject = new Async.Async(this);
+                    }
+
+                    return _asyncObject;
                 }
             }
         }

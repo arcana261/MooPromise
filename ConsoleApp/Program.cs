@@ -18,12 +18,27 @@ namespace ConsoleApp
 
             var exit = new ManualResetEventSlim(false);
 
-            int x = 0;
-
-            Promise.Factory.Control.For(0, i => i < 10, i => i + 1).Do(i => Console.WriteLine(i)).Then(() =>
+            Promise.Factory.Async.Begin<int>(ctx =>
             {
-                Console.WriteLine("finished!");
+                ctx.Variables.Define<int>("i", 0);
+
+                ctx.While(() => ctx.Variables.Get<int>("i") < 5).Do(() =>
+                {
+                    Console.WriteLine(ctx.Variables.Get<int>("i"));
+                    ctx.Variables.Set("i", ctx.Variables.Get<int>("i") + 1);
+                });
+
+                ctx.Return(() => ctx.Variables.Get<int>("i"));
+
+            }).Then(res =>
+            {
+                Console.WriteLine("! finished !");
+                Console.WriteLine(res);
+            }).Catch(err =>
+            {
+                Console.WriteLine(err);
             });
+
 
             exit.Wait();
 
