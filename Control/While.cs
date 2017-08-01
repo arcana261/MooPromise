@@ -8,12 +8,34 @@ namespace MooPromise.Control
     public class While
     {
         private PromiseFactory _factory;
-        private Func<IPromise<bool>> _condition;
+        private Func<IPromise<ControlValue<bool>>> _condition;
 
-        internal While(PromiseFactory factory, Func<IPromise<bool>> condition)
+        internal While(PromiseFactory factory, Func<IPromise<ControlValue<bool>>> condition)
         {
             this._factory = factory;
             this._condition = condition;
+        }
+
+        internal While(PromiseFactory factory, Func<ControlValue<bool>> condition)
+            : this(factory, () => factory.Value(condition()))
+        {
+
+        }
+
+        internal While(PromiseFactory factory, Func<IPromise<bool>> condition)
+            : this(factory, () =>
+            {
+                var next = condition();
+
+                if (next == null)
+                {
+                    return null;
+                }
+
+                return next.Then(result => new ControlValue<bool>(result));
+            })
+        {
+
         }
 
         internal While(PromiseFactory factory, Func<bool> condition)
@@ -30,6 +52,16 @@ namespace MooPromise.Control
             }
         }
 
+        public IPromise Do(Action body)
+        {
+            return Do(() =>
+            {
+                body();
+
+                return _factory.Value();
+            });
+        }
+
         public IPromise Do(Func<IPromise> body)
         {
             return Do(() =>
@@ -41,35 +73,8 @@ namespace MooPromise.Control
                     return null;
                 }
 
-                return next.Then(() => ControlState.Continue);
+                return next.Then(() => ControlState.Next);
             }).Cast();
-        }
-
-        public IPromise Do(Action body)
-        {
-            return Do(() =>
-            {
-                body();
-                return _factory.Value();
-            });
-        }
-
-        public IPromise<ControlState> Do(Func<IPromise<ControlState>> body)
-        {
-            return Do<object>(() =>
-            {
-                var next = body();
-
-                if (next == null)
-                {
-                    return null;
-                }
-
-                return next.Then(result =>
-                {
-                    return new ControlValue<object>(result);
-                });
-            }).Then(result => result.State);
         }
 
         public IPromise<ControlState> Do(Func<ControlState> body)
@@ -77,58 +82,7 @@ namespace MooPromise.Control
             return Do(() => _factory.Value(body()));
         }
 
-        public IPromise<ControlValue<T>> Do<T>(Func<IPromise<ControlValue<T>>> body)
-        {
-            var nextCondition = _condition();
-
-            if (nextCondition == null)
-            {
-                return _factory.Value(ControlValue<T>.Continue);
-            }
-
-            return nextCondition.Then(check =>
-            {
-                if (!check)
-                {
-                    return _factory.Value(ControlValue<T>.Continue);
-                }
-
-                var next = body();
-
-                if (next == null)
-                {
-                    return _factory.Value(ControlValue<T>.Continue);
-                }
-
-                return next.Then(result =>
-                {
-                    if (result == null || result.State == ControlState.Break)
-                    {
-                        return _factory.Value(ControlValue<T>.Continue);
-
-                    }
-
-                    if (result.State == ControlState.Continue)
-                    {
-                        return Do(body);
-                    }
-
-                    if (result.State == ControlState.Return)
-                    {
-                        return _factory.Value(result);
-                    }
-
-                    throw new InvalidOperationException();
-                });
-            });
-        }
-
-        public IPromise<ControlValue<T>> Do<T>(Func<ControlValue<T>> body)
-        {
-            return Do(() => _factory.Value(body()));
-        }
-
-        public IPromise<T> Do<T>(Func<IPromise<T>> body)
+        public IPromise<ControlState> Do(Func<IPromise<ControlState>> body)
         {
             return Do(() =>
             {
@@ -139,13 +93,109 @@ namespace MooPromise.Control
                     return null;
                 }
 
-                return next.Then(result => new ControlValue<T>(result));
-            }).Then(result => result.Value);
+                return next.Then(result => new ControlValue<object>(result));
+            }).Then(result => result.State);
         }
 
-        public IPromise<T> Do<T>(Func<T> body)
+        public IPromise<ControlValue<E>> Do<E>(Func<ControlValue<E>> body)
         {
             return Do(() => _factory.Value(body()));
+        }
+
+        public IPromise<NullableResult<T>> Do<T>(Func<IPromise<NullableResult<T>>> body)
+        {
+            return Do(() =>
+            {
+                var next = body();
+
+                if (next == null)
+                {
+                    return null;
+                }
+
+                return next.Then(result =>
+                {
+                    if (result == null || !result.HasResult)
+                    {
+                        return ControlValue<NullableResult<T>>.Next;
+                    }
+
+                    return ControlValue<NullableResult<T>>.Return(result);
+                });
+            }).Then(result =>
+            {
+                if (result == null || !result.HasValue)
+                {
+                    return new NullableResult<T>();
+                }
+
+                return result.Value;
+            });
+        }
+
+        public IPromise<NullableResult<T>> Do<T>(Func<NullableResult<T>> body)
+        {
+            return Do(() => _factory.Value(body()));
+        }
+
+        public IPromise<NullableResult<T>> Do<T>(Func<IPromise<T>> body)
+        {
+            return Do(() =>
+            {
+                var next = body();
+
+                if (next == null)
+                {
+                    return null;
+                }
+
+                return next.Then(result => new NullableResult<T>(result));
+            });
+        }
+
+        public IPromise<NullableResult<T>> Do<T>(Func<T> body)
+        {
+            return Do(() => _factory.Value(body()));
+        }
+
+        public IPromise<ControlValue<E>> Do<E>(Func<IPromise<ControlValue<E>>> body)
+        {
+            var nextCondition = _condition();
+
+            if (nextCondition == null)
+            {
+                return _factory.Value(ControlValue<E>.Next);
+            }
+
+            return nextCondition.Then(conditionResult =>
+            {
+                if (conditionResult == null || conditionResult.State != ControlState.Return || !conditionResult.HasValue || !conditionResult.Value)
+                {
+                    return _factory.Value(ControlValue<E>.Next);
+                }
+
+                var nextBody = body();
+
+                if (nextBody == null)
+                {
+                    return _factory.Value(ControlValue<E>.Next);
+                }
+
+                return nextBody.Then(bodyResult =>
+                {
+                    if (bodyResult == null || bodyResult.State == ControlState.Break)
+                    {
+                        return _factory.Value(ControlValue<E>.Next);
+                    }
+
+                    if (bodyResult.State == ControlState.Return)
+                    {
+                        return _factory.Value(bodyResult);
+                    }
+
+                    return Do(body);
+                });
+            });
         }
     }
 }

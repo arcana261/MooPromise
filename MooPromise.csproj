@@ -114,7 +114,7 @@
     <Compile Include="PromiseSynchronizationContext.cs" />
     <Compile Include="TaskRunner\ManualTaskResult.cs" />
     <Compile Include="TaskRunner\Moo\FailureProcessedException.cs" />
-    <Compile Include="DataStructure\NullableResult.cs" />
+    <Compile Include="NullableResult.cs" />
     <Compile Include="TaskRunner\ITaskFactory.cs" />
     <Compile Include="TaskRunner\Moo\BoundTaskResult.cs" />
     <Compile Include="TaskRunner\Moo\ImmediateTaskResult.cs" />

@@ -77,6 +77,16 @@ namespace MooPromise.Control
             return new While(_factory, condition);
         }
 
+        public While While(Func<IPromise<ControlValue<bool>>> condition)
+        {
+            return new While(_factory, condition);
+        }
+
+        public While While(Func<ControlValue<bool>> condition)
+        {
+            return new While(_factory, condition);
+        }
+
         public For<T> For<T>(T seed, Func<T, IPromise<bool>> condition, Func<T, IPromise<T>> iterator)
         {
             return new For<T>(_factory, seed, condition, iterator);

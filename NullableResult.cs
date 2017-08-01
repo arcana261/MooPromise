@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MooPromise.DataStructure
+namespace MooPromise
 {
-    internal class NullableResult<T>
+    public class NullableResult<T>
     {
         private T _result;
         private bool _hasResult;

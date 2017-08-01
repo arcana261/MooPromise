@@ -7,6 +7,6 @@ namespace MooPromise
 {
     public enum ControlState
     {
-        Continue, Break, Return
+        Continue, Break, Return, Next
     }
 }

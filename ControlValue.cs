@@ -27,6 +27,14 @@ namespace MooPromise
             }
         }
 
+        internal static ControlValue<T> Next
+        {
+            get
+            {
+                return new ControlValue<T>(ControlState.Next);
+            }
+        }
+
         internal static ControlValue<T> Return(T value)
         {
             return new ControlValue<T>(value);
