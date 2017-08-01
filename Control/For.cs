@@ -28,183 +28,97 @@ namespace MooPromise.Control
             }
         }
 
-        public IPromise Do(Func<T, IPromise> body)
+        private T GetCurrent()
         {
-            return Do(x =>
+            lock (this)
             {
-                var next = body(x);
-
-                if (next == null)
-                {
-                    return null;
-                }
-
-                return next.Then(() => ControlState.Next);
-            }).Cast();
+                return _current;
+            }
         }
 
-        public IPromise Do(Action<T> body)
+        private void SetCurrent(T value)
         {
-            return Do(x =>
+            lock (this)
             {
-                body(x);
-
-                return _factory.Value();
-            });
-        }
-
-        public IPromise<ControlState> Do(Func<T, IPromise<ControlState>> body)
-        {
-            return Do(x =>
-            {
-                var next = body(x);
-
-                if (next == null)
-                {
-                    return null;
-                }
-
-                return next.Then(state => new ControlValue<object>(state));
-            }).Then(result => result.State);
-        }
-
-        public IPromise<ControlState> Do(Func<T, ControlState> body)
-        {
-            return Do(x => _factory.Value(body(x)));
-        }
-
-        public IPromise<ControlValue<E>> Do<E>(Func<T, ControlValue<E>> body)
-        {
-            return Do(x => _factory.Value(body(x)));
+                _current = value;
+            }
         }
 
         public IPromise<ControlValue<E>> Do<E>(Func<T, IPromise<ControlValue<E>>> body)
         {
-            var nextCondition = _condition(_current);
+            var w = new While(_factory, () => _condition(GetCurrent()));
 
-            if (nextCondition == null)
+            return w.Do(() => _factory.SafeThen(body(GetCurrent()), result =>
             {
-                return _factory.Value(ControlValue<E>.Next);
-            }
-
-            return nextCondition.Then(check =>
-            {
-                if (check == null || check.State != ControlState.Return || !check.HasValue || !check.Value)
+                if (result == null || result.State == ControlState.Break)
                 {
                     return _factory.Value(ControlValue<E>.Next);
                 }
 
-                var next = body(_current);
-
-                if (next == null)
+                if (result.State == ControlState.Return)
                 {
-                    return _factory.Value(ControlValue<E>.Next);
+                    return _factory.Value(result);
                 }
 
-                return next.Then(result =>
+                return _factory.SafeThen(_iterator(GetCurrent()), next =>
                 {
-                    if (result == null || result.State == ControlState.Break)
+                    if (next == null || next.State != ControlState.Return || !next.HasValue)
                     {
-                        return _factory.Value(ControlValue<E>.Next);
+                        return ControlValue<E>.Break;
                     }
 
-                    if (result.State == ControlState.Return)
-                    {
-                        return _factory.Value(result);
-                    }
-
-                    var nextIterator = _iterator(_current);
-
-                    if (nextIterator == null)
-                    {
-                        return _factory.Value(ControlValue<E>.Next);
-                    }
-
-                    return nextIterator.Then(nextValue =>
-                    {
-                        if (nextValue == null || nextValue.State != ControlState.Return || !nextValue.HasValue)
-                        {
-                            return _factory.Value(ControlValue<E>.Next);
-                        }
-
-                        return (new For<T>(_factory, nextValue.Value, _condition, _iterator)).Do(body);
-                    });
+                    SetCurrent(next.Value);
+                    return ControlValue<E>.Continue;
                 });
-            });
+            }));
+        }
+
+        public IPromise<ControlValue<E>> Do<E>(Func<T, ControlValue<E>> body)
+        {
+            return Do(_factory.Canonical(body));
         }
 
         public IPromise<NullableResult<E>> Do<E>(Func<T, IPromise<NullableResult<E>>> body)
         {
-            return Do(x =>
-            {
-                var next = body(x);
-
-                if (next == null)
-                {
-                    return null;
-                }
-
-                return next.Then(result =>
-                {
-                    if (result == null || !result.HasResult)
-                    {
-                        return new ControlValue<NullableResult<E>>(ControlState.Next);
-                    }
-
-                    return new ControlValue<NullableResult<E>>(result);
-                });
-            }).Then(result =>
-            {
-                if (result == null || !result.HasValue)
-                {
-                    return new NullableResult<E>();
-                }
-
-                return result.Value;
-            });
+            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
         }
 
         public IPromise<NullableResult<E>> Do<E>(Func<T, NullableResult<E>> body)
         {
-            return Do(x => _factory.Value(body(x)));
+            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
         }
 
         public IPromise<NullableResult<E>> Do<E>(Func<T, IPromise<E>> body)
         {
-            return Do(x =>
-            {
-                var next = body(x);
-
-                if (next == null)
-                {
-                    return null;
-                }
-
-                return next.Then(result => new NullableResult<E>(result));
-            });
+            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
         }
 
         public IPromise<NullableResult<E>> Do<E>(Func<T, E> body)
         {
-            return Do(x => _factory.Value(body(x)));
+            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
         }
 
-        public IPromise Do(Action body)
+        public IPromise Do(Func<T, IPromise> body)
         {
-            return Do(x => body());
+            return Do(_factory.Canonical(body)).Cast();
         }
 
-        public IPromise Do(Func<IPromise> body)
+        public IPromise Do(Action<T> body)
         {
-            return Do(x => body());
+            return Do(_factory.Canonical(body)).Cast();
         }
 
-        public IPromise<ControlState> Do(Func<ControlState> body)
+        public IPromise Do(Func<T, IPromise<ControlState>> body)
         {
-            return Do(x => body());
+            return Do(_factory.Canonical(body)).Cast();
         }
 
-        public IPromise<ControlState> Do(Func<IPromise<ControlState>> body)
+        public IPromise Do(Func<T, ControlState> body)
+        {
+            return Do(_factory.Canonical(body)).Cast();
+        }
+
+        public IPromise<ControlValue<E>> Do<E>(Func<IPromise<ControlValue<E>>> body)
         {
             return Do(x => body());
         }
@@ -214,11 +128,6 @@ namespace MooPromise.Control
             return Do(x => body());
         }
 
-        public IPromise<ControlValue<E>> Do<E>(Func<IPromise<ControlValue<E>>> body)
-        {
-            return Do(x => body());
-        }
-        
         public IPromise<NullableResult<E>> Do<E>(Func<IPromise<NullableResult<E>>> body)
         {
             return Do(x => body());
@@ -237,6 +146,195 @@ namespace MooPromise.Control
         public IPromise<NullableResult<E>> Do<E>(Func<E> body)
         {
             return Do(x => body());
+        }
+
+        public IPromise Do(Func<IPromise> body)
+        {
+            return Do(x => body());
+        }
+
+        public IPromise Do(Action body)
+        {
+            return Do(x => body());
+        }
+
+        public IPromise Do(Func<IPromise<ControlState>> body)
+        {
+            return Do(x => body());
+        }
+
+        public IPromise Do(Func<ControlState> body)
+        {
+            return Do(x => body());
+        }
+    }
+
+    public class ForWithSeedAndCondition<T>
+    {
+        private PromiseFactory _factory;
+        private T _seed;
+        private Func<T, IPromise<ControlValue<bool>>> _condition;
+
+        internal ForWithSeedAndCondition(PromiseFactory factory, T seed, Func<T, IPromise<ControlValue<bool>>> condition)
+        {
+            this._factory = factory;
+            this._seed = seed;
+            this._condition = condition;
+        }
+
+        public For<T> Iterate(Func<T, IPromise<ControlValue<T>>> iterator)
+        {
+            return new For<T>(_factory, _seed, _condition, iterator);
+        }
+
+        public For<T> Iterate(Func<T, ControlValue<T>> iterator)
+        {
+            return Iterate(_factory.Canonical(iterator));
+        }
+
+        public For<T> Iterate(Func<T, IPromise<NullableResult<T>>> iterator)
+        {
+            return Iterate(_factory.Canonical(iterator));
+        }
+
+        public For<T> Iterate(Func<T, NullableResult<T>> iterator)
+        {
+            return Iterate(_factory.Canonical(iterator));
+        }
+
+        public For<T> Iterate(Func<T, IPromise<T>> iterator)
+        {
+            return Iterate(_factory.Canonical(iterator));
+        }
+
+        public For<T> Iterate(Func<T, T> iterator)
+        {
+            return Iterate(_factory.Canonical(iterator));
+        }
+
+        public For<T> Iterate(Func<IPromise<ControlValue<T>>> iterator)
+        {
+            return Iterate(x => iterator());
+        }
+
+        public For<T> Iterate(Func<ControlValue<T>> iterator)
+        {
+            return Iterate(x => iterator());
+        }
+
+        public For<T> Iterate(Func<IPromise<NullableResult<T>>> iterator)
+        {
+            return Iterate(x => iterator());
+        }
+
+        public For<T> Iterate(Func<NullableResult<T>> iterator)
+        {
+            return Iterate(x => iterator());
+        }
+
+        public For<T> Iterate(Func<IPromise<T>> iterator)
+        {
+            return Iterate(x => iterator());
+        }
+
+        public For<T> Iterate(Func<T> iterator)
+        {
+            return Iterate(x => iterator());
+        }
+
+        public For<T> Iterate(T value)
+        {
+            return Iterate(() => value);
+        }
+    }
+
+    public class ForWithSeed<T>
+    {
+        private PromiseFactory _factory;
+        private T _seed;
+
+        internal ForWithSeed(PromiseFactory factory, T seed)
+        {
+            this._factory = factory;
+            this._seed = seed;
+        }
+
+        public PromiseFactory Factory
+        {
+            get
+            {
+                return _factory;
+            }
+        }
+
+        public ForWithSeedAndCondition<T> While(Func<T, IPromise<ControlValue<bool>>> condition)
+        {
+            return new ForWithSeedAndCondition<T>(_factory, _seed, condition);
+        }
+
+        public ForWithSeedAndCondition<T> While(Func<T, ControlValue<bool>> condition)
+        {
+            return While(_factory.Canonical(condition));
+        }
+
+        public ForWithSeedAndCondition<T> While(Func<T, IPromise<NullableResult<bool>>> condition)
+        {
+            return While(_factory.Canonical(condition));
+        }
+
+        public ForWithSeedAndCondition<T> While(Func<T, NullableResult<bool>> condition)
+        {
+            return While(_factory.Canonical(condition));
+        }
+
+        public ForWithSeedAndCondition<T> While(Func<T, IPromise<bool>> condition)
+        {
+            return While(_factory.Canonical(condition));
+        }
+
+        public ForWithSeedAndCondition<T> While(Func<T, bool> condition)
+        {
+            return While(_factory.Canonical(condition));
+        }
+
+        public ForWithSeedAndCondition<T> While(Func<IPromise<ControlValue<bool>>> condition)
+        {
+            return While(x => condition());
+        }
+
+        public ForWithSeedAndCondition<T> While(Func<ControlValue<bool>> condition)
+        {
+            return While(x => condition());
+        }
+
+        public ForWithSeedAndCondition<T> While(Func<IPromise<NullableResult<bool>>> condition)
+        {
+            return While(x => condition());
+        }
+
+        public ForWithSeedAndCondition<T> While(Func<NullableResult<bool>> condition)
+        {
+            return While(x => condition());
+        }
+
+        public ForWithSeedAndCondition<T> While(Func<IPromise<bool>> condition)
+        {
+            return While(x => condition());
+        }
+
+        public ForWithSeedAndCondition<T> While(Func<bool> condition)
+        {
+            return While(x => condition());
+        }
+
+        public ForWithSeedAndCondition<T> While(bool value)
+        {
+            return While(() => value);
+        }
+
+        public ForWithSeedAndCondition<T> While()
+        {
+            return While(true);
         }
     }
 }

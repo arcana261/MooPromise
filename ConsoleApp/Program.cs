@@ -17,11 +17,10 @@ namespace ConsoleApp
             Promise.SetDefaultFactory(1, 1);
 
             var exit = new ManualResetEventSlim(false);
-            int i = 0;
 
-            Promise.Factory.Control.While(() => i < 5).Do(() =>
+            Promise.Factory.Control.For(0).While(x => x < 5).Iterate(x => x + 1).Do(i =>
             {
-                Console.WriteLine(i++);
+                Console.WriteLine(i);
             }).Then(() =>
             {
                 Console.WriteLine("!done!");

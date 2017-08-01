@@ -16,34 +16,6 @@ namespace MooPromise.Control
             this._condition = condition;
         }
 
-        internal While(PromiseFactory factory, Func<ControlValue<bool>> condition)
-            : this(factory, () => factory.Value(condition()))
-        {
-
-        }
-
-        internal While(PromiseFactory factory, Func<IPromise<bool>> condition)
-            : this(factory, () =>
-            {
-                var next = condition();
-
-                if (next == null)
-                {
-                    return null;
-                }
-
-                return next.Then(result => new ControlValue<bool>(result));
-            })
-        {
-
-        }
-
-        internal While(PromiseFactory factory, Func<bool> condition)
-            : this(factory, () => factory.Value(condition()))
-        {
-
-        }
-
         public PromiseFactory Factory
         {
             get
@@ -52,150 +24,75 @@ namespace MooPromise.Control
             }
         }
 
-        public IPromise Do(Action body)
+        public IPromise<ControlValue<T>> Do<T>(Func<IPromise<ControlValue<T>>> body)
         {
-            return Do(() =>
+            return _factory.SafeThen(_condition, check =>
             {
-                body();
-
-                return _factory.Value();
-            });
-        }
-
-        public IPromise Do(Func<IPromise> body)
-        {
-            return Do(() =>
-            {
-                var next = body();
-
-                if (next == null)
+                if (check == null || check.State != ControlState.Return || !check.HasValue || !check.Value)
                 {
-                    return null;
+                    return _factory.Value(ControlValue<T>.Next);
                 }
 
-                return next.Then(() => ControlState.Next);
-            }).Cast();
-        }
-
-        public IPromise<ControlState> Do(Func<ControlState> body)
-        {
-            return Do(() => _factory.Value(body()));
-        }
-
-        public IPromise<ControlState> Do(Func<IPromise<ControlState>> body)
-        {
-            return Do(() =>
-            {
-                var next = body();
-
-                if (next == null)
+                return _factory.SafeThen(body, result =>
                 {
-                    return null;
-                }
-
-                return next.Then(result => new ControlValue<object>(result));
-            }).Then(result => result.State);
-        }
-
-        public IPromise<ControlValue<E>> Do<E>(Func<ControlValue<E>> body)
-        {
-            return Do(() => _factory.Value(body()));
-        }
-
-        public IPromise<NullableResult<T>> Do<T>(Func<IPromise<NullableResult<T>>> body)
-        {
-            return Do(() =>
-            {
-                var next = body();
-
-                if (next == null)
-                {
-                    return null;
-                }
-
-                return next.Then(result =>
-                {
-                    if (result == null || !result.HasResult)
+                    if (result == null || result.State == ControlState.Break)
                     {
-                        return ControlValue<NullableResult<T>>.Next;
+                        return _factory.Value(ControlValue<T>.Next);
                     }
 
-                    return ControlValue<NullableResult<T>>.Return(result);
-                });
-            }).Then(result =>
-            {
-                if (result == null || !result.HasValue)
-                {
-                    return new NullableResult<T>();
-                }
-
-                return result.Value;
-            });
-        }
-
-        public IPromise<NullableResult<T>> Do<T>(Func<NullableResult<T>> body)
-        {
-            return Do(() => _factory.Value(body()));
-        }
-
-        public IPromise<NullableResult<T>> Do<T>(Func<IPromise<T>> body)
-        {
-            return Do(() =>
-            {
-                var next = body();
-
-                if (next == null)
-                {
-                    return null;
-                }
-
-                return next.Then(result => new NullableResult<T>(result));
-            });
-        }
-
-        public IPromise<NullableResult<T>> Do<T>(Func<T> body)
-        {
-            return Do(() => _factory.Value(body()));
-        }
-
-        public IPromise<ControlValue<E>> Do<E>(Func<IPromise<ControlValue<E>>> body)
-        {
-            var nextCondition = _condition();
-
-            if (nextCondition == null)
-            {
-                return _factory.Value(ControlValue<E>.Next);
-            }
-
-            return nextCondition.Then(conditionResult =>
-            {
-                if (conditionResult == null || conditionResult.State != ControlState.Return || !conditionResult.HasValue || !conditionResult.Value)
-                {
-                    return _factory.Value(ControlValue<E>.Next);
-                }
-
-                var nextBody = body();
-
-                if (nextBody == null)
-                {
-                    return _factory.Value(ControlValue<E>.Next);
-                }
-
-                return nextBody.Then(bodyResult =>
-                {
-                    if (bodyResult == null || bodyResult.State == ControlState.Break)
+                    if (result.State == ControlState.Return)
                     {
-                        return _factory.Value(ControlValue<E>.Next);
-                    }
-
-                    if (bodyResult.State == ControlState.Return)
-                    {
-                        return _factory.Value(bodyResult);
+                        return _factory.Value(result);
                     }
 
                     return Do(body);
                 });
             });
+        }
+
+        public IPromise<ControlValue<T>> Do<T>(Func<ControlValue<T>> body)
+        {
+            return Do(_factory.Canonical(body));
+        }
+
+        public IPromise<NullableResult<T>> Do<T>(Func<IPromise<NullableResult<T>>> body)
+        {
+            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
+        }
+
+        public IPromise<NullableResult<T>> Do<T>(Func<NullableResult<T>> body)
+        {
+            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
+        }
+
+        public IPromise<NullableResult<T>> Do<T>(Func<IPromise<T>> body)
+        {
+            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
+        }
+
+        public IPromise<NullableResult<T>> Do<T>(Func<T> body)
+        {
+            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
+        }
+
+        public IPromise<ControlState> Do(Func<IPromise<ControlState>> body)
+        {
+            return Do(_factory.Canonical(body)).ToControlState(_factory);
+        }
+
+        public IPromise<ControlState> Do(Func<ControlState> body)
+        {
+            return Do(_factory.Canonical(body)).ToControlState(_factory);
+        }
+
+        public IPromise Do(Func<IPromise> body)
+        {
+            return Do(_factory.Canonical(body)).Cast();
+        }
+
+        public IPromise Do(Action body)
+        {
+            return Do(_factory.Canonical(body)).Cast();
         }
     }
 }

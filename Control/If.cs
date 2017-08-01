@@ -8,18 +8,12 @@ namespace MooPromise.Control
     public class If
     {
         private PromiseFactory _factory;
-        private Func<IPromise<bool>> _condition;
+        private Func<IPromise<ControlValue<bool>>> _condition;
 
-        internal If(PromiseFactory factory, Func<IPromise<bool>> condition)
+        internal If(PromiseFactory factory, Func<IPromise<ControlValue<bool>>> condition)
         {
             this._factory = factory;
             this._condition = condition;
-        }
-
-        internal If(PromiseFactory factory, Func<bool> condition)
-            : this(factory, () => factory.Value(condition()))
-        {
-
         }
 
         public PromiseFactory Factory
@@ -30,130 +24,131 @@ namespace MooPromise.Control
             }
         }
 
-        public IPromise Do(Action body)
+        public IPromise<ControlValue<T>> Do<T>(Func<IPromise<ControlValue<T>>> body)
         {
-            return Do(() =>
+            return _factory.SafeThen(_condition, check =>
             {
-                body();
-
-                return _factory.Value();
-            });
-        }
-
-        public IPromise Do(Func<IPromise> body)
-        {
-            return Do(() =>
-            {
-                var next = body();
-
-                if (next == null)
+                if (check == null || check.State != ControlState.Return || !check.HasValue || !check.Value)
                 {
-                    return null;
+                    return _factory.Value(ControlValue<T>.Next);
                 }
 
-                return next.Then(() => ControlState.Continue);
-            }).Cast();
-        }
-
-        public IPromise<ControlState> Do(Func<ControlState> body)
-        {
-            return Do(() => _factory.Value(body()));
-        }
-
-        public IPromise<ControlState> Do(Func<IPromise<ControlState>> body)
-        {
-            return Do(() =>
-            {
-                var next = body();
-
-                if (next == null)
+                return _factory.SafeThen(body, result =>
                 {
-                    return null;
-                }
+                    if (result == null)
+                    {
+                        return ControlValue<T>.Break;
+                    }
 
-                return next.Then(result => new ControlValue<object>(result));
-            }).Then(result => result.State);
+                    return result;
+                });
+            }); 
         }
 
         public IPromise<ControlValue<T>> Do<T>(Func<ControlValue<T>> body)
         {
-            return Do(() => _factory.Value(body()));
+            return Do(_factory.Canonical(body));
         }
 
-        public IPromise<ControlValue<T>> Do<T>(Func<IPromise<ControlValue<T>>> body)
+        public IPromise<NullableResult<T>> Do<T>(Func<IPromise<NullableResult<T>>> body)
         {
-            var nextCondition = _condition();
-
-            if (_condition == null)
-            {
-                return _factory.Value(ControlValue<T>.Continue);
-            }
-
-            return nextCondition.Then(check =>
-            {
-                if (!check)
-                {
-                    return _factory.Value(ControlValue<T>.Continue);
-                }
-
-                return body();
-            });
+            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
         }
 
-        public IPromise<T> Do<T>(Func<IPromise<T>> body)
+        public IPromise<NullableResult<T>> Do<T>(Func<NullableResult<T>> body)
         {
-            return Do(() =>
-            {
-                var next = body();
-
-                if (next == null)
-                {
-                    return null;
-                }
-
-                return next.Then(result => new ControlValue<T>(result));
-            }).Then(result => result.Value);
+            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
         }
 
-        public IPromise<T> Do<T>(Func<T> body)
+        public IPromise<NullableResult<T>> Do<T>(Func<IPromise<T>> body)
         {
-            return Do(() => _factory.Value(body()));
+            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
+        }
+
+        public IPromise<NullableResult<T>> Do<T>(Func<T> body)
+        {
+            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
+        }
+
+        public IPromise Do(Func<IPromise> body)
+        {
+            return Do(_factory.Canonical(body)).Cast();
+        }
+
+        public IPromise Do(Action body)
+        {
+            return Do(_factory.Canonical(body)).Cast();
+        }
+
+        public IPromise Do(Func<IPromise<ControlState>> body)
+        {
+            return Do(_factory.Canonical(body)).Cast();
+        }
+
+        public IPromise Do(Func<ControlState> body)
+        {
+            return Do(_factory.Canonical(body)).Cast();
         }
 
         public If Else
         {
             get
             {
-                return ElseIf(() => true);
+                return ElseIf(true);
             }
         }
 
-        public If ElseIf(Func<bool> newCondition)
+        public If ElseIf(Func<IPromise<ControlValue<bool>>> newCondition)
         {
-            return ElseIf(() => _factory.Value(newCondition()));
+            return new If(_factory, () => _factory.SafeThen(_condition, check =>
+            {
+                if (check == null || check.State != ControlState.Return || !check.HasValue)
+                {
+                    return _factory.Value(ControlValue<bool>.Break);
+                }
+
+                if (check.Value)
+                {
+                    return _factory.Value(ControlValue<bool>.Return(false));
+                }
+
+                return newCondition();
+            }));
+        }
+
+        public If ElseIf(Func<ControlValue<bool>> newCondition)
+        {
+            return ElseIf(_factory.Canonical(newCondition));
+        }
+
+        public If ElseIf(Func<IPromise<NullableResult<bool>>> newCondition)
+        {
+            return ElseIf(_factory.Canonical(newCondition));
+        }
+
+        public If ElseIf(Func<NullableResult<bool>> newCondition)
+        {
+            return ElseIf(_factory.Canonical(newCondition));
         }
 
         public If ElseIf(Func<IPromise<bool>> newCondition)
         {
-            return new If(_factory, () =>
-            {
-                var next = _condition();
+            return ElseIf(_factory.Canonical(newCondition));
+        }
 
-                if (next == null)
-                {
-                    return null;
-                }
+        public If ElseIf(Func<bool> newCondition)
+        {
+            return ElseIf(_factory.Canonical(newCondition));
+        }
 
-                return next.Then(result =>
-                {
-                    if (result)
-                    {
-                        return _factory.Value(false);
-                    }
+        public If ElseIf(bool value)
+        {
+            return ElseIf(() => value);
+        }
 
-                    return newCondition();
-                });
-            });
+        public If ElseIf()
+        {
+            return ElseIf(true);
         }
     }
 }

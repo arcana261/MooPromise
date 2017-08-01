@@ -29,52 +29,57 @@ namespace MooPromise.Control
 
         public DoWhileControlValue<T> Do<T>(Func<ControlValue<T>> body)
         {
-            return Do(() => _factory.Value(body()));
+            return Do(_factory.Canonical(body));
         }
 
-        public DoWhileControlState Do(Func<IPromise<ControlState>> body)
+        public DoWhileNullableResult<T> Do<T>(Func<IPromise<NullableResult<T>>> body)
         {
-            return new DoWhileControlState(_factory, body);
+            return new DoWhileNullableResult<T>(_factory, _factory.Canonical(body));
         }
 
-        public DoWhileControlState Do(Func<ControlState> body)
+        public DoWhileNullableResult<T> Do<T>(Func<NullableResult<T>> body)
         {
-            return Do(() => _factory.Value(body()));
+            return new DoWhileNullableResult<T>(_factory, _factory.Canonical(body));
         }
 
-        public DoWhileResult<T> Do<T>(Func<IPromise<T>> body)
+        public DoWhileNullableResult<T> Do<T>(Func<IPromise<T>> body)
         {
-            return new DoWhileResult<T>(_factory, body);
+            return new DoWhileNullableResult<T>(_factory, _factory.Canonical(body));
         }
 
-        public DoWhileResult<T> Do<T>(Func<T> body)
+        public DoWhileNullableResult<T> Do<T>(Func<T> body)
         {
-            return Do(() => _factory.Value(body()));
+            return new DoWhileNullableResult<T>(_factory, _factory.Canonical(body));
         }
 
         public DoWhileVoid Do(Func<IPromise> body)
         {
-            return new DoWhileVoid(_factory, body);
+            return new DoWhileVoid(_factory, _factory.Canonical(body));
         }
 
         public DoWhileVoid Do(Action body)
         {
-            return Do(() =>
-            {
-                body();
+            return new DoWhileVoid(_factory, _factory.Canonical(body));
+        }
 
-                return _factory.Value();
-            });
+        public DoWhileVoid Do(Func<IPromise<ControlState>> body)
+        {
+            return new DoWhileVoid(_factory, _factory.Canonical(body));
+        }
+
+        public DoWhileVoid Do(Func<ControlState> body)
+        {
+            return new DoWhileVoid(_factory, _factory.Canonical(body));
         }
 
         public While While(Func<IPromise<bool>> condition)
         {
-            return new While(_factory, condition);
+            return While(_factory.Canonical(condition));
         }
 
         public While While(Func<bool> condition)
         {
-            return new While(_factory, condition);
+            return While(() => _factory.Value(condition()));
         }
 
         public While While(Func<IPromise<ControlValue<bool>>> condition)
@@ -84,37 +89,72 @@ namespace MooPromise.Control
 
         public While While(Func<ControlValue<bool>> condition)
         {
-            return new While(_factory, condition);
+            return While(_factory.Canonical(condition));
         }
 
-        public For<T> For<T>(T seed, Func<T, IPromise<bool>> condition, Func<T, IPromise<T>> iterator)
+        public While While(Func<IPromise<NullableResult<bool>>> condition)
         {
-            return new For<T>(_factory, seed, condition, iterator);
+            return While(_factory.Canonical(condition));
         }
 
-        public For<T> For<T>(T seed, Func<T, bool> condition, Func<T, IPromise<T>> iterator)
+        public While While(Func<NullableResult<bool>> condition)
         {
-            return For(seed, x => _factory.Value(condition(x)), iterator);
+            return While(_factory.Canonical(condition));
         }
 
-        public For<T> For<T>(T seed, Func<T, IPromise<bool>> condition, Func<T, T> iterator)
+        public While While(bool value)
         {
-            return For(seed, condition, x => _factory.Value(iterator(x)));
+            return While(() => value);
         }
 
-        public For<T> For<T>(T seed, Func<T, bool> condition, Func<T, T> iterator)
+        public While While()
         {
-            return For(seed, x => _factory.Value(condition(x)), x => _factory.Value(iterator(x)));
+            return While(true);
+        }
+
+        public ForWithSeed<T> For<T>(T seed)
+        {
+            return new ForWithSeed<T>(_factory, seed);
+        }
+
+        public If If(Func<IPromise<ControlValue<bool>>> condition)
+        {
+            return new If(_factory, condition);
+        }
+
+        public If If(Func<ControlValue<bool>> condition)
+        {
+            return If(_factory.Canonical(condition));
+        }
+
+        public If If(Func<IPromise<NullableResult<bool>>> condition)
+        {
+            return If(_factory.Canonical(condition));
+        }
+
+        public If If(Func<NullableResult<bool>> condition)
+        {
+            return If(_factory.Canonical(condition));
         }
 
         public If If(Func<IPromise<bool>> condition)
         {
-            return new If(_factory, condition);
+            return If(_factory.Canonical(condition));
         }
 
         public If If(Func<bool> condition)
         {
-            return new If(_factory, condition);
+            return If(_factory.Canonical(condition));
+        }
+
+        public If If(bool value)
+        {
+            return If(() => value);
+        }
+
+        public If If()
+        {
+            return If(true);
         }
     }
 }

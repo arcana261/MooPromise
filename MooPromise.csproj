@@ -50,6 +50,7 @@
     <Compile Include="Backend\WpfDispatcherBackend.cs" />
     <Compile Include="ControlState.cs" />
     <Compile Include="ControlValue.cs" />
+    <Compile Include="Control\CanonicalExtensions.cs" />
     <Compile Include="Control\Control.cs" />
     <Compile Include="Async\DefinitionBag.cs" />
     <Compile Include="Control\DoWhile.cs" />
