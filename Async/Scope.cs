@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MooPromise.Control;
 
 namespace MooPromise.Async
 {
@@ -54,7 +55,7 @@ namespace MooPromise.Async
                 {
                     _last = _last.Then(value =>
                     {
-                        if (value == null || value.State != ControlState.Continue)
+                        if (value == null || value.State != ControlState.Next)
                         {
                             return _factory.Value(value);
                         }
@@ -71,7 +72,7 @@ namespace MooPromise.Async
             {
                 if (_last == null)
                 {
-                    _result.Resolve(ControlValue<T>.Continue);
+                    _result.Resolve(ControlValue<T>.Next);
                 }
                 else
                 {
@@ -96,72 +97,67 @@ namespace MooPromise.Async
 
         public Scope<T> Run(Func<ControlValue<T>> action)
         {
-            return Run(() => _factory.Value(action()));
+            return Run(_factory.Canonical(action));
         }
 
         public Scope<T> Run(Func<IPromise<ControlState>> action)
         {
-            return Run(() =>
-            {
-                var next = action();
-
-                if (next == null)
-                {
-                    return null;
-                }
-
-                return next.Then(result => new ControlValue<T>(result));
-            });
+            return Run(_factory.Canonical<T>(action));
         }
 
         public Scope<T> Run(Func<ControlState> action)
         {
-            return Run(() => _factory.Value(action()));
+            return Run(_factory.Canonical<T>(action));
         }
 
         public Scope<T> Run(Func<IPromise<T>> action)
         {
-            return Run(() =>
-            {
-                var next = action();
-
-                if (next == null)
-                {
-                    return null;
-                }
-
-                return next.Then(result => new ControlValue<T>(result));
-            });
+            return Run(_factory.Canonical(action));
         }
 
         public Scope<T> Run(Func<T> action)
         {
-            return Run(() => _factory.Value(action()));
+            return Run(_factory.Canonical(action));
         }
 
         public Scope<T> Run(Func<IPromise> action)
         {
-            return Run(() =>
-            {
-                var next = action();
-
-                if (next == null)
-                {
-                    return null;
-                }
-
-                return next.Then(() => ControlState.Continue);
-            });
+            return Run(_factory.Canonical<T>(action));
         }
 
         public Scope<T> Run(Action action)
         {
-            return Run(() =>
-            {
-                action();
+            return Run(_factory.Canonical<T>(action));
+        }
 
-                return _factory.Value();
-            });
+        public Scope<T> Run(Func<IPromise<NullableResult<T>>> action)
+        {
+            return Run(_factory.Canonical(action));
+        }
+
+        public Scope<T> Run(Func<NullableResult<T>> action)
+        {
+            return Run(_factory.Canonical(action));
+        }
+
+        public Scope<T> Return(IPromise<ControlValue<T>> result)
+        {
+            return Run(() => result);
+        }
+
+        public Scope<T> Return(ControlValue<T> result)
+        {
+            return Run(() => result);
+        }
+
+        public Scope<T> Return(IPromise<NullableResult<T>> result)
+        {
+            return Run(() => result);
+        }
+
+        public Scope<T> Return(NullableResult<T> result)
+        {
+            return Run(() => result);
         }
 
         public Scope<T> Return(IPromise<T> result)
@@ -174,14 +170,34 @@ namespace MooPromise.Async
             return Run(() => result);
         }
 
-        public Scope<T> Return(Func<T> result)
+        public Scope<T> Return(Func<IPromise<ControlValue<T>>> result)
         {
-            return Run(() => result());
+            return Run(result);
+        }
+
+        public Scope<T> Return(Func<ControlValue<T>> result)
+        {
+            return Run(result);
+        }
+
+        public Scope<T> Return(Func<IPromise<NullableResult<T>>> result)
+        {
+            return Run(result);
+        }
+
+        public Scope<T> Return(Func<NullableResult<T>> result)
+        {
+            return Run(result);
         }
 
         public Scope<T> Return(Func<IPromise<T>> result)
         {
-            return Run(() => result());
+            return Run(result);
+        }
+
+        public Scope<T> Return(Func<T> result)
+        {
+            return Run(result);
         }
 
         public Scope<T> Begin(Action<Scope<T>> block)
@@ -213,14 +229,99 @@ namespace MooPromise.Async
             return new While<T>(this, condition);
         }
 
+        public While<T> While(Func<IPromise<ControlValue<bool>>> condition)
+        {
+            return While(scope => scope.Return(condition()));
+        }
+
+        public While<T> While(Func<ControlValue<bool>> condition)
+        {
+            return While(scope => scope.Return(condition()));
+        }
+
+        public While<T> While(Func<IPromise<NullableResult<bool>>> condition)
+        {
+            return While(scope => scope.Return(condition()));
+        }
+
+        public While<T> While(Func<NullableResult<bool>> condition)
+        {
+            return While(scope => scope.Return(condition()));
+        }
+
         public While<T> While(Func<IPromise<bool>> condition)
         {
-            return While(scope => scope.Return(condition));
+            return While(scope => scope.Return(condition()));
         }
 
         public While<T> While(Func<bool> condition)
         {
             return While(() => _factory.Value(condition()));
+        }
+
+        public While<T> While(bool condition)
+        {
+            return While(() => condition);
+        }
+
+        public While<T> While()
+        {
+            return While(true);
+        }
+
+        public If<T> If(Action<Scope<bool>> condition)
+        {
+            return new If<T>(this, condition);
+        }
+
+        public If<T> If(Func<IPromise<ControlValue<bool>>> condition)
+        {
+            return If(block => block.Return(condition));
+        }
+
+        public If<T> If(Func<ControlValue<bool>> condition)
+        {
+            return If(block => block.Return(condition));
+        }
+
+        public If<T> If(Func<IPromise<NullableResult<bool>>> condition)
+        {
+            return If(block => block.Return(condition));
+        }
+
+        public If<T> If(Func<NullableResult<bool>> condition)
+        {
+            return If(block => block.Return(condition));
+        }
+
+        public If<T> If(Func<IPromise<bool>> condition)
+        {
+            return If(block => block.Return(condition));
+        }
+
+        public If<T> If(Func<bool> condition)
+        {
+            return If(block => block.Return(condition));
+        }
+
+        public If<T> If(bool condition)
+        {
+            return If(() => condition);
+        }
+
+        public If<T> If()
+        {
+            return If(true);
+        }
+
+        public If<T> If(NullableResult<bool> condition)
+        {
+            return If(() => condition);
+        }
+
+        public If<T> If(ControlValue<bool> condition)
+        {
+            return If(() => condition);
         }
 
         public For<T> For(Func<IPromise<T>> initial, Action<T, Scope<bool>> condition, Action<T, Scope<T>> iterator)

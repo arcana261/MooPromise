@@ -246,22 +246,42 @@ namespace MooPromise.Control
 
         public static Func<IPromise<ControlValue<object>>> Canonical(this PromiseFactory factory, Func<IPromise<ControlState>> fn)
         {
-            return factory.Canonical(() => factory.SafeThen(fn, result => new ControlValue<object>(result)));
+            return factory.Canonical<object>(fn);
         }
 
         public static Func<IPromise<ControlValue<object>>> Canonical(this PromiseFactory factory, Func<ControlState> fn)
         {
-            return factory.Canonical(() => factory.Value(fn()));
+            return factory.Canonical<object>(fn);
+        }
+
+        public static Func<IPromise<ControlValue<T>>> Canonical<T>(this PromiseFactory factory, Func<IPromise<ControlState>> fn)
+        {
+            return factory.Canonical(() => factory.SafeThen(fn, result => new ControlValue<T>(result)));
+        }
+
+        public static Func<IPromise<ControlValue<T>>> Canonical<T>(this PromiseFactory factory, Func<ControlState> fn)
+        {
+            return factory.Canonical<T>(() => factory.Value(fn()));
         }
 
         public static Func<IPromise<ControlValue<object>>> Canonical(this PromiseFactory factory, Func<IPromise> fn)
         {
-            return factory.Canonical(() => factory.SafeThen(fn, () => ControlState.Next));
+            return factory.Canonical<object>(fn);
+        }
+
+        public static Func<IPromise<ControlValue<T>>> Canonical<T>(this PromiseFactory factory, Func<IPromise> fn)
+        {
+            return factory.Canonical<T>(() => factory.SafeThen(fn, () => ControlState.Next));
         }
 
         public static Func<IPromise<ControlValue<object>>> Canonical(this PromiseFactory factory, Action fn)
         {
-            return factory.Canonical(fn.ReturnPromise(factory));
+            return factory.Canonical<object>(fn);
+        }
+
+        public static Func<IPromise<ControlValue<T>>> Canonical<T>(this PromiseFactory factory, Action fn)
+        {
+            return factory.Canonical<T>(fn.ReturnPromise(factory));
         }
 
         public static Func<T, IPromise<ControlValue<E>>> Canonical<T, E>(this PromiseFactory factory, Func<T, IPromise<ControlValue<E>>> fn)
@@ -319,7 +339,7 @@ namespace MooPromise.Control
 
         public static Func<T, IPromise<ControlValue<object>>> Canonical<T>(this PromiseFactory factory, Action<T> fn)
         {
-            return factory.Canonical<T, object>(fn.ReturnPromise(factory));
+            return factory.Canonical<T>(fn.ReturnPromise(factory));
         }
     }
 }

@@ -26,7 +26,7 @@ namespace MooPromise.Control
 
         public IPromise<ControlValue<T>> While(Func<IPromise<ControlValue<bool>>> condition)
         {
-            var f = new For<bool>(_factory, true, _factory.Canonical<bool, bool>(x => x), _factory.Canonical<bool, bool>(x => condition()));
+            var f = new For<bool>(_factory, _factory.Canonical(() => true), _factory.Canonical<bool, bool>(x => x), _factory.Canonical<bool, bool>(x => condition()));
             return f.Do(_body);
         }
 
@@ -35,14 +35,14 @@ namespace MooPromise.Control
             return While(_factory.Canonical(condition));
         }
 
-        public IPromise<ControlValue<T>> While(Func<IPromise<NullableResult<bool>>> condition)
+        public IPromise<NullableResult<T>> While(Func<IPromise<NullableResult<bool>>> condition)
         {
-            return While(_factory.Canonical(condition));
+            return While(_factory.Canonical(condition)).ToNullableResult(_factory);
         }
 
-        public IPromise<ControlValue<T>> While(Func<NullableResult<bool>> condition)
+        public IPromise<NullableResult<T>> While(Func<NullableResult<bool>> condition)
         {
-            return While(_factory.Canonical(condition));
+            return While(_factory.Canonical(condition)).ToNullableResult(_factory);
         }
 
         public IPromise<ControlValue<T>> While(Func<IPromise<bool>> condition)

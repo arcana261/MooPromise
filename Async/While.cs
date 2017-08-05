@@ -18,7 +18,7 @@ namespace MooPromise.Async
 
         public Scope<T> Do(Action<Scope<T>> block)
         {
-            return _owner.Run(() => _owner.Factory.Control.While(() => _owner.BeginImmediately<bool>(_condition).Finish().Then(result => result.Value)).Do(() => _owner.BeginImmediately<T>(block).Finish()));
+            return _owner.Run(() => _owner.Factory.Control.While(() => _owner.BeginImmediately<bool>(_condition).Finish()).Do(() => _owner.BeginImmediately<T>(block).Finish()));
         }
 
         public Scope<T> Do(Action block)

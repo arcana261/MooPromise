@@ -44,6 +44,7 @@
     <Compile Include="Async\Async.cs" />
     <Compile Include="Async\DoWhile.cs" />
     <Compile Include="Async\For.cs" />
+    <Compile Include="Async\If.cs" />
     <Compile Include="Async\While.cs" />
     <Compile Include="Backend\Moo\MooBackendFutureTask.cs" />
     <Compile Include="Backend\SynchronizationContextBackend.cs" />

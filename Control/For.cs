@@ -8,14 +8,16 @@ namespace MooPromise.Control
     public class For<T>
     {
         private PromiseFactory _factory;
+        private Func<IPromise<ControlValue<T>>> _seed;
         private T _current;
         private Func<T, IPromise<ControlValue<bool>>> _condition;
         private Func<T, IPromise<ControlValue<T>>> _iterator;
 
-        internal For(PromiseFactory factory, T current, Func<T, IPromise<ControlValue<bool>>> condition, Func<T, IPromise<ControlValue<T>>> iterator)
+        internal For(PromiseFactory factory, Func<IPromise<ControlValue<T>>> seed, Func<T, IPromise<ControlValue<bool>>> condition, Func<T, IPromise<ControlValue<T>>> iterator)
         {
             this._factory = factory;
-            this._current = current;
+            this._current = default(T);
+            this._seed = seed;
             this._condition = condition;
             this._iterator = iterator;
         }
@@ -46,31 +48,41 @@ namespace MooPromise.Control
 
         public IPromise<ControlValue<E>> Do<E>(Func<T, IPromise<ControlValue<E>>> body)
         {
-            var w = new While(_factory, () => _condition(GetCurrent()));
-
-            return w.Do(() => _factory.SafeThen(body(GetCurrent()), result =>
+            return _factory.SafeThen(_seed, seedResult =>
             {
-                if (result == null || result.State == ControlState.Break)
+                if (seedResult == null || seedResult.State != ControlState.Return || !seedResult.HasValue)
                 {
                     return _factory.Value(ControlValue<E>.Next);
                 }
 
-                if (result.State == ControlState.Return)
-                {
-                    return _factory.Value(result);
-                }
+                SetCurrent(seedResult.Value);
 
-                return _factory.SafeThen(_iterator(GetCurrent()), next =>
+                var w = new While(_factory, () => _condition(GetCurrent()));
+
+                return w.Do(() => _factory.SafeThen(body(GetCurrent()), result =>
                 {
-                    if (next == null || next.State != ControlState.Return || !next.HasValue)
+                    if (result == null || result.State == ControlState.Break)
                     {
-                        return ControlValue<E>.Break;
+                        return _factory.Value(ControlValue<E>.Next);
                     }
 
-                    SetCurrent(next.Value);
-                    return ControlValue<E>.Continue;
-                });
-            }));
+                    if (result.State == ControlState.Return)
+                    {
+                        return _factory.Value(result);
+                    }
+
+                    return _factory.SafeThen(_iterator(GetCurrent()), next =>
+                    {
+                        if (next == null || next.State != ControlState.Return || !next.HasValue)
+                        {
+                            return ControlValue<E>.Break;
+                        }
+
+                        SetCurrent(next.Value);
+                        return ControlValue<E>.Continue;
+                    });
+                }));
+            });
         }
 
         public IPromise<ControlValue<E>> Do<E>(Func<T, ControlValue<E>> body)
@@ -172,10 +184,10 @@ namespace MooPromise.Control
     public class ForWithSeedAndCondition<T>
     {
         private PromiseFactory _factory;
-        private T _seed;
+        private Func<IPromise<ControlValue<T>>> _seed;
         private Func<T, IPromise<ControlValue<bool>>> _condition;
 
-        internal ForWithSeedAndCondition(PromiseFactory factory, T seed, Func<T, IPromise<ControlValue<bool>>> condition)
+        internal ForWithSeedAndCondition(PromiseFactory factory, Func<IPromise<ControlValue<T>>> seed, Func<T, IPromise<ControlValue<bool>>> condition)
         {
             this._factory = factory;
             this._seed = seed;
@@ -251,9 +263,9 @@ namespace MooPromise.Control
     public class ForWithSeed<T>
     {
         private PromiseFactory _factory;
-        private T _seed;
+        private Func<IPromise<ControlValue<T>>> _seed;
 
-        internal ForWithSeed(PromiseFactory factory, T seed)
+        internal ForWithSeed(PromiseFactory factory, Func<IPromise<ControlValue<T>>> seed)
         {
             this._factory = factory;
             this._seed = seed;

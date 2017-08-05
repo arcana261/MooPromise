@@ -112,9 +112,89 @@ namespace MooPromise.Control
             return While(true);
         }
 
-        public ForWithSeed<T> For<T>(T seed)
+        public While While(IPromise<bool> condition)
+        {
+            return While(() => condition);
+        }
+
+        public While While(NullableResult<bool> condition)
+        {
+            return While(() => condition);
+        }
+
+        public While While(IPromise<NullableResult<bool>> condition)
+        {
+            return While(() => condition);
+        }
+
+        public While While(ControlValue<bool> condition)
+        {
+            return While(() => condition);
+        }
+
+        public While While(IPromise<ControlValue<bool>> condition)
+        {
+            return While(() => condition);
+        }
+
+        public ForWithSeed<T> For<T>(Func<IPromise<ControlValue<T>>> seed)
         {
             return new ForWithSeed<T>(_factory, seed);
+        }
+
+        public ForWithSeed<T> For<T>(Func<ControlValue<T>> seed)
+        {
+            return For(_factory.Canonical(seed));
+        }
+
+        public ForWithSeed<T> For<T>(Func<IPromise<NullableResult<T>>> seed)
+        {
+            return For(_factory.Canonical(seed));
+        }
+
+        public ForWithSeed<T> For<T>(Func<NullableResult<T>> seed)
+        {
+            return For(_factory.Canonical(seed));
+        }
+
+        public ForWithSeed<T> For<T>(Func<IPromise<T>> seed)
+        {
+            return For(_factory.Canonical(seed));
+        }
+
+        public ForWithSeed<T> For<T>(Func<T> seed)
+        {
+            return For(_factory.Canonical(seed));
+        }
+
+        public ForWithSeed<T> For<T>(T seed)
+        {
+            return For(() => seed);
+        }
+
+        public ForWithSeed<T> For<T>(IPromise<T> seed)
+        {
+            return For(() => seed);
+        }
+
+        public ForWithSeed<T> For<T>(NullableResult<T> seed)
+        {
+            return For(() => seed);
+        }
+
+        public ForWithSeed<T> For<T>(IPromise<NullableResult<T>> seed)
+        {
+            return For(() => seed);
+        }
+
+        public ForWithSeed<T> For<T>(ControlValue<T> seed)
+        {
+            return For(() => seed);
+        }
+
+        public ForWithSeed<T> For<T>(IPromise<ControlValue<T>> seed)
+        {
+            return For(() => seed);
         }
 
         public If If(Func<IPromise<ControlValue<bool>>> condition)
@@ -155,6 +235,31 @@ namespace MooPromise.Control
         public If If()
         {
             return If(true);
+        }
+
+        public If If(IPromise<bool> value)
+        {
+            return If(() => value);
+        }
+
+        public If If(NullableResult<bool> value)
+        {
+            return If(() => value);
+        }
+
+        public If If(IPromise<NullableResult<bool>> value)
+        {
+            return If(() => value);
+        }
+
+        public If If(ControlValue<bool> value)
+        {
+            return If(() => value);
+        }
+
+        public If If(IPromise<ControlValue<bool>> value)
+        {
+            return If(() => value);
         }
     }
 }
