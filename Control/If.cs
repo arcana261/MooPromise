@@ -5,35 +5,26 @@ using System.Text;
 
 namespace MooPromise.Control
 {
-    public class If
+    public class If : DoAble
     {
-        private PromiseFactory _factory;
         private Func<IPromise<ControlValue<bool>>> _condition;
 
         internal If(PromiseFactory factory, Func<IPromise<ControlValue<bool>>> condition)
+            : base(factory)
         {
-            this._factory = factory;
             this._condition = condition;
         }
 
-        public PromiseFactory Factory
+        public override IPromise<ControlValue<T>> Do<T>(Func<IPromise<ControlValue<T>>> body)
         {
-            get
-            {
-                return _factory;
-            }
-        }
-
-        public IPromise<ControlValue<T>> Do<T>(Func<IPromise<ControlValue<T>>> body)
-        {
-            return _factory.SafeThen(_condition, check =>
+            return Factory.SafeThen(_condition, check =>
             {
                 if (check == null || check.State != ControlState.Return || !check.HasValue || !check.Value)
                 {
-                    return _factory.Value(ControlValue<T>.Next);
+                    return Factory.Value(ControlValue<T>.Next);
                 }
 
-                return _factory.SafeThen(body, result =>
+                return Factory.SafeThen(body, result =>
                 {
                     if (result == null)
                     {
@@ -43,51 +34,6 @@ namespace MooPromise.Control
                     return result;
                 });
             }); 
-        }
-
-        public IPromise<ControlValue<T>> Do<T>(Func<ControlValue<T>> body)
-        {
-            return Do(_factory.Canonical(body));
-        }
-
-        public IPromise<NullableResult<T>> Do<T>(Func<IPromise<NullableResult<T>>> body)
-        {
-            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
-        }
-
-        public IPromise<NullableResult<T>> Do<T>(Func<NullableResult<T>> body)
-        {
-            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
-        }
-
-        public IPromise<NullableResult<T>> Do<T>(Func<IPromise<T>> body)
-        {
-            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
-        }
-
-        public IPromise<NullableResult<T>> Do<T>(Func<T> body)
-        {
-            return Do(_factory.Canonical(body)).ToNullableResult(_factory);
-        }
-
-        public IPromise Do(Func<IPromise> body)
-        {
-            return Do(_factory.Canonical(body)).Cast();
-        }
-
-        public IPromise Do(Action body)
-        {
-            return Do(_factory.Canonical(body)).Cast();
-        }
-
-        public IPromise Do(Func<IPromise<ControlState>> body)
-        {
-            return Do(_factory.Canonical(body)).Cast();
-        }
-
-        public IPromise Do(Func<ControlState> body)
-        {
-            return Do(_factory.Canonical(body)).Cast();
         }
 
         public If Else
@@ -100,16 +46,16 @@ namespace MooPromise.Control
 
         public If ElseIf(Func<IPromise<ControlValue<bool>>> newCondition)
         {
-            return new If(_factory, () => _factory.SafeThen(_condition, check =>
+            return new If(Factory, () => Factory.SafeThen(_condition, check =>
             {
                 if (check == null || check.State != ControlState.Return || !check.HasValue)
                 {
-                    return _factory.Value(ControlValue<bool>.Break);
+                    return Factory.Value(ControlValue<bool>.Break);
                 }
 
                 if (check.Value)
                 {
-                    return _factory.Value(ControlValue<bool>.Return(false));
+                    return Factory.Value(ControlValue<bool>.Return(false));
                 }
 
                 return newCondition();
@@ -118,27 +64,27 @@ namespace MooPromise.Control
 
         public If ElseIf(Func<ControlValue<bool>> newCondition)
         {
-            return ElseIf(_factory.Canonical(newCondition));
+            return ElseIf(Factory.Canonical(newCondition));
         }
 
         public If ElseIf(Func<IPromise<NullableResult<bool>>> newCondition)
         {
-            return ElseIf(_factory.Canonical(newCondition));
+            return ElseIf(Factory.Canonical(newCondition));
         }
 
         public If ElseIf(Func<NullableResult<bool>> newCondition)
         {
-            return ElseIf(_factory.Canonical(newCondition));
+            return ElseIf(Factory.Canonical(newCondition));
         }
 
         public If ElseIf(Func<IPromise<bool>> newCondition)
         {
-            return ElseIf(_factory.Canonical(newCondition));
+            return ElseIf(Factory.Canonical(newCondition));
         }
 
         public If ElseIf(Func<bool> newCondition)
         {
-            return ElseIf(_factory.Canonical(newCondition));
+            return ElseIf(Factory.Canonical(newCondition));
         }
 
         public If ElseIf(bool value)
@@ -149,6 +95,31 @@ namespace MooPromise.Control
         public If ElseIf()
         {
             return ElseIf(true);
+        }
+
+        public If ElseIf(ControlValue<bool> value)
+        {
+            return ElseIf(() => value);
+        }
+
+        public If ElseIf(NullableResult<bool> value)
+        {
+            return ElseIf(() => value);
+        }
+
+        public If ElseIf(IPromise<ControlValue<bool>> value)
+        {
+            return ElseIf(() => value);
+        }
+
+        public If ElseIf(IPromise<NullableResult<bool>> value)
+        {
+            return ElseIf(() => value);
+        }
+
+        public If ElseIf(IPromise<bool> value)
+        {
+            return ElseIf(() => value);
         }
     }
 }

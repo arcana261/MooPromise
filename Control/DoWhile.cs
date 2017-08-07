@@ -5,180 +5,68 @@ using System.Text;
 
 namespace MooPromise.Control
 {
-    public class DoWhileControlValue<T>
+    public class DoWhileControlValue<T> : WhileAble<IPromise<ControlValue<T>>>
     {
-        private PromiseFactory _factory;
         private Func<IPromise<ControlValue<T>>> _body;
 
         internal DoWhileControlValue(PromiseFactory factory, Func<IPromise<ControlValue<T>>> body)
+            : base(factory)
         {
-            this._factory = factory;
             this._body = body;
         }
 
-        public PromiseFactory Factory
+        public override IPromise<ControlValue<T>> While(Func<IPromise<ControlValue<bool>>> condition)
         {
-            get
-            {
-                return _factory;
-            }
-        }
-
-        public IPromise<ControlValue<T>> While(Func<IPromise<ControlValue<bool>>> condition)
-        {
-            var f = new For<bool>(_factory, _factory.Canonical(() => true), _factory.Canonical<bool, bool>(x => x), _factory.Canonical<bool, bool>(x => condition()));
+            var f = new For<bool>(Factory, Factory.Canonical(() => true), Factory.Canonical<bool, bool>(x => x), Factory.Canonical<bool, bool>(x => condition()));
             return f.Do(_body);
-        }
-
-        public IPromise<ControlValue<T>> While(Func<ControlValue<bool>> condition)
-        {
-            return While(_factory.Canonical(condition));
-        }
-
-        public IPromise<NullableResult<T>> While(Func<IPromise<NullableResult<bool>>> condition)
-        {
-            return While(_factory.Canonical(condition)).ToNullableResult(_factory);
-        }
-
-        public IPromise<NullableResult<T>> While(Func<NullableResult<bool>> condition)
-        {
-            return While(_factory.Canonical(condition)).ToNullableResult(_factory);
-        }
-
-        public IPromise<ControlValue<T>> While(Func<IPromise<bool>> condition)
-        {
-            return While(_factory.Canonical(condition));
-        }
-
-        public IPromise<ControlValue<T>> While(Func<bool> condition)
-        {
-            return While(_factory.Canonical(condition));
-        }
-
-        public IPromise<ControlValue<T>> While(bool condition)
-        {
-            return While(() => condition);
-        }
-
-        public IPromise<ControlValue<T>> While()
-        {
-            return While(true);
         }
     }
 
-    public class DoWhileNullableResult<T>
+    public class DoWhileNullableResult<T> : WhileAble<IPromise<NullableResult<T>>>
     {
         private DoWhileControlValue<T> _while;
 
         internal DoWhileNullableResult(PromiseFactory factory, Func<IPromise<ControlValue<T>>> body)
+            : base(factory)
         {
             _while = new DoWhileControlValue<T>(factory, body);
         }
 
-        public PromiseFactory Factory
-        {
-            get
-            {
-                return _while.Factory;
-            }
-        }
-
-        public IPromise<NullableResult<T>> While(Func<IPromise<ControlValue<bool>>> condition)
+        public override IPromise<NullableResult<T>> While(Func<IPromise<ControlValue<bool>>> condition)
         {
             return _while.While(condition).ToNullableResult(_while.Factory);
-        }
-
-        public IPromise<NullableResult<T>> While(Func<ControlValue<bool>> condition)
-        {
-            return _while.While(condition).ToNullableResult(_while.Factory);
-        }
-
-        public IPromise<NullableResult<T>> While(Func<IPromise<NullableResult<bool>>> condition)
-        {
-            return _while.While(condition).ToNullableResult(_while.Factory);
-        }
-
-        public IPromise<NullableResult<T>> While(Func<NullableResult<bool>> condition)
-        {
-            return _while.While(condition).ToNullableResult(_while.Factory);
-        }
-
-        public IPromise<NullableResult<T>> While(Func<IPromise<bool>> condition)
-        {
-            return _while.While(condition).ToNullableResult(_while.Factory);
-        }
-
-        public IPromise<NullableResult<T>> While(Func<bool> condition)
-        {
-            return _while.While(condition).ToNullableResult(_while.Factory);
-        }
-
-        public IPromise<NullableResult<T>> While(bool condition)
-        {
-            return _while.While(condition).ToNullableResult(_while.Factory);
-        }
-
-        public IPromise<NullableResult<T>> While()
-        {
-            return _while.While().ToNullableResult(_while.Factory);
         }
     }
 
-    public class DoWhileVoid
+    public class DoWhileVoid : WhileAble<IPromise>
     {
         private DoWhileControlValue<object> _while;
 
         internal DoWhileVoid(PromiseFactory factory, Func<IPromise<ControlValue<object>>> body)
+            : base(factory)
         {
             _while = new DoWhileControlValue<object>(factory, body);
         }
 
-        public PromiseFactory Factory
-        {
-            get
-            {
-                return _while.Factory;
-            }
-        }
-
-        public IPromise While(Func<IPromise<ControlValue<bool>>> condition)
+        public override IPromise While(Func<IPromise<ControlValue<bool>>> condition)
         {
             return _while.While(condition).Cast();
         }
+    }
 
-        public IPromise While(Func<ControlValue<bool>> condition)
+    public class DoWhileControlState : WhileAble<IPromise<ControlState>>
+    {
+        private DoWhileControlValue<object> _while;
+
+        internal DoWhileControlState(PromiseFactory factory, Func<IPromise<ControlValue<object>>> body)
+            : base(factory)
         {
-            return _while.While(condition).Cast();
+            _while = new DoWhileControlValue<object>(factory, body);
         }
 
-        public IPromise While(Func<IPromise<NullableResult<bool>>> condition)
+        public override IPromise<ControlState> While(Func<IPromise<ControlValue<bool>>> condition)
         {
-            return _while.While(condition).Cast();
-        }
-
-        public IPromise While(Func<NullableResult<bool>> condition)
-        {
-            return _while.While(condition).Cast();
-        }
-
-        public IPromise While(Func<IPromise<bool>> condition)
-        {
-            return _while.While(condition).Cast();
-        }
-
-        public IPromise While(Func<bool> condition)
-        {
-            return _while.While(condition).Cast();
-        }
-
-        public IPromise While(bool condition)
-        {
-            return _while.While(condition).Cast();
-        }
-
-        public IPromise While()
-        {
-            return _while.While().Cast();
+            return _while.While(condition).ToControlState(_while.Factory);
         }
     }
 }

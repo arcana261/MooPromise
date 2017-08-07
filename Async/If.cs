@@ -1,31 +1,38 @@
-﻿using System;
+﻿using MooPromise.Control;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace MooPromise.Async
 {
-    public class If<T>
+    public class If<T> : DoAble<T>
     {
         private Scope<T> _owner;
         private Action<Scope<bool>> _condition;
 
         internal If(Scope<T> owner, Action<Scope<bool>> condition)
+            : base(owner.Factory)
         {
             this._owner = owner;
             this._condition = condition;
         }
 
+
+        private Scope<T> _Do(Action<Scope<T>> block)
+        {
+            return _owner.Run(() => _owner.Factory.Control.If(() => _owner.BeginImmediately<bool>(_condition).Finish()).Do(() => _owner.BeginImmediately<T>(block).Finish()));
+        }
+
         public If<T> Do(Action<Scope<T>> block)
         {
-            _owner.Run(() => _owner.Factory.Control.If(() => _owner.BeginImmediately<bool>(_condition).Finish()).Do(() => _owner.BeginImmediately<T>(block).Finish()));
-
+            _Do(block);
             return this;
         }
 
-        public If<T> Do(Action block)
+        public override IPromise<ControlValue<T>> Do(Func<IPromise<ControlValue<T>>> body)
         {
-            return Do(scope => block());
+            return _Do(scope => scope.Run(body).Finish()).Finish();
         }
 
         public If<T> ElseIf(Action<Scope<bool>> condition)
@@ -97,6 +104,21 @@ namespace MooPromise.Async
         public If<T> ElseIf(ControlValue<bool> condition)
         {
             return ElseIf(() => condition);
+        }
+
+        public If<T> ElseIf(IPromise<bool> value)
+        {
+            return ElseIf(() => value);
+        }
+
+        public If<T> ElseIf(IPromise<NullableResult<bool>> value)
+        {
+            return ElseIf(() => value);
+        }
+
+        public If<T> ElseIf(IPromise<ControlValue<bool>> value)
+        {
+            return ElseIf(() => value);
         }
 
         public If<T> Else
