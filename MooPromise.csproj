@@ -54,11 +54,13 @@
     <Compile Include="Control\CanonicalExtensions.cs" />
     <Compile Include="Control\Control.cs" />
     <Compile Include="Async\DefinitionBag.cs" />
+    <Compile Include="Control\DoAble.cs" />
     <Compile Include="Control\DoWhile.cs" />
     <Compile Include="Control\For.cs" />
     <Compile Include="Control\If.cs" />
     <Compile Include="Async\Scope.cs" />
     <Compile Include="Control\While.cs" />
+    <Compile Include="Control\WhileAble.cs" />
     <Compile Include="DataStructure\Debug\ListDebugView.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="Enumerable\AnyAlgorithm.cs" />
